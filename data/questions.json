@@ -1,0 +1,116 @@
+{
+  "certifications": [
+    {
+      "id": "google-associate-cloud-engineer",
+      "name": "Google Associate Cloud Engineer",
+      "description": "Validates your ability to deploy applications, monitor operations, manage enterprise solutions, and configure networks and security on Google Cloud Platform.",
+      "icon": "⚡",
+      "questions": [
+        {
+          "id": "gcp-ace-1",
+          "question": "Your development team needs to store and retrieve files from a Cloud Storage bucket. The team should be able to view, list, delete, and overwrite objects in the bucket, but they must not be allowed to change bucket permissions, storage classes, or bucket lifecycle configurations. Which IAM role should you grant to the team?",
+          "options": [
+            "Storage Admin (roles/storage.admin)",
+            "Storage Object Admin (roles/storage.objectAdmin)",
+            "Storage Object Creator (roles/storage.objectCreator)",
+            "Storage Object Viewer (roles/storage.objectViewer)"
+          ],
+          "correctAnswerIndex": 1,
+          "explanation": "Storage Object Admin (roles/storage.objectAdmin) grants full control over objects (files) inside a bucket, allowing creation, viewing, listing, and deletion. However, it does not grant permissions to modify the bucket itself (such as changing bucket permissions, lifecycle rules, etc.), which requires the Storage Admin role."
+        },
+        {
+          "id": "gcp-ace-2",
+          "question": "You have a containerized web application that experiences highly variable traffic throughout the day. It needs to scale down to zero instances when there is no traffic to minimize costs. The setup must require minimal infrastructure management. Which Google Cloud service should you choose?",
+          "options": [
+            "Compute Engine with Managed Instance Groups (MIGs)",
+            "App Engine Flexible Environment",
+            "Cloud Run",
+            "Google Kubernetes Engine (GKE) Standard Cluster"
+          ],
+          "correctAnswerIndex": 2,
+          "explanation": "Cloud Run is a fully managed serverless container platform that automatically scales containerized applications up and down (including scaling down to zero instances when idle), charging you only for resources used. App Engine Flexible does not support scaling down to zero instances, and MIGs/GKE require more infrastructure management."
+        },
+        {
+          "id": "gcp-ace-3",
+          "question": "Your company wants to perform a detailed analysis of its Google Cloud spending patterns over the last 6 months. You need to export the billing data to a queryable format with minimal effort. What is the recommended approach?",
+          "options": [
+            "Write a Python script using the Billing API to fetch billing records and store them in a Cloud SQL database.",
+            "Configure Cloud Billing export to direct billing data to a BigQuery dataset from the Google Cloud Console.",
+            "Download monthly CSV invoices from the Billing console and upload them to Google Sheets.",
+            "Use Cloud Logging to filter billing logs and export them to a Cloud Storage bucket."
+          ],
+          "correctAnswerIndex": 1,
+          "explanation": "Google Cloud provides a native integration to export detailed billing data directly to BigQuery. Once set up, Cloud Billing automatically loads daily spending information into tables in your designated BigQuery dataset, allowing SQL-based analysis, dashboards, and reporting."
+        },
+        {
+          "id": "gcp-ace-4",
+          "question": "You are running a critical production web server on a Compute Engine virtual machine instance. You want to view application-level log files and system performance metrics (like memory utilization) inside Cloud Logging and Cloud Monitoring. What is required?",
+          "options": [
+            "Compute Engine VMs automatically send memory and custom application logs; no additional actions are needed.",
+            "Install the Ops Agent on the VM instance and configure it to collect and forward logs and metrics.",
+            "Enable the Cloud Logging API in the project and restart the VM instance.",
+            "Attach a read-write service account to the VM instance with the Logs Writer role."
+          ],
+          "correctAnswerIndex": 1,
+          "explanation": "By default, Compute Engine only exports basic hypervisor-level metrics (like CPU utilization and disk write throughput) and system boot logs. To collect OS-level metrics (such as memory usage) and custom application log files, you must install and configure the Ops Agent on the virtual machine."
+        },
+        {
+          "id": "gcp-ace-5",
+          "question": "You create a new custom VPC network named 'prod-vpc'. Within this network, you create two subnets: 'subnet-us' (10.0.1.0/24) in the us-central1 region, and 'subnet-eu' (10.0.2.0/24) in the europe-west1 region. What is the default internal connectivity status between a VM in 'subnet-us' and a VM in 'subnet-eu'?",
+          "options": [
+            "They cannot communicate internally because they are in different subnets and different regions.",
+            "They can communicate internally by default because Google Cloud custom VPCs have system-generated routing rules that connect all subnets in the VPC.",
+            "They can only communicate internally if you explicitly set up a VPN Gateway or VPC Network Peering between the regions.",
+            "They can only communicate if they are assigned public external IP addresses and route traffic via the public internet."
+          ],
+          "correctAnswerIndex": 1,
+          "explanation": "In Google Cloud, VPC networks are global resources. Subnets within the same VPC, regardless of their regions, are automatically connected via internal routes created by default. As long as firewall rules allow the traffic, VMs in different subnets across different regions can communicate using their internal IP addresses."
+        }
+      ]
+    },
+    {
+      "id": "aws-certified-cloud-practitioner",
+      "name": "AWS Certified Cloud Practitioner",
+      "description": "Provides a high-level overview of AWS cloud concepts, security, technology, architecture, and billing models.",
+      "icon": "☁️",
+      "questions": [
+        {
+          "id": "aws-ccp-1",
+          "question": "According to the AWS Shared Responsibility Model, which of the following is a security responsibility of the customer?",
+          "options": [
+            "Maintaining physical security of AWS data centers",
+            "Managing infrastructure virtualization and hypervisors",
+            "Configuring security groups and Network Access Control Lists (NACLs) on instances",
+            "Disposing of decommissioned storage devices"
+          ],
+          "correctAnswerIndex": 2,
+          "explanation": "Under the AWS Shared Responsibility Model, AWS is responsible for security 'of' the cloud (physical security, virtualization hypervisors, hardware infrastructure), while the customer is responsible for security 'in' the cloud (network access controls, operating systems, applications, and customer data)."
+        },
+        {
+          "id": "aws-ccp-2",
+          "question": "A company needs to store regulatory compliance documents for 7 years. The documents are rarely accessed but must be available within minutes if requested. Which Amazon S3 storage class offers the most cost-effective solution?",
+          "options": [
+            "Amazon S3 Standard",
+            "Amazon S3 Glacier Instant Retrieval",
+            "Amazon S3 Glacier Deep Archive",
+            "Amazon S3 Intelligent-Tiering"
+          ],
+          "correctAnswerIndex": 1,
+          "explanation": "Amazon S3 Glacier Instant Retrieval is the most cost-effective storage class for archiving data that is rarely accessed but requires millisecond (immediate/minutes) retrieval. Glacier Deep Archive is cheaper but takes 12 hours for retrieval, and S3 Standard is too expensive for archival storage."
+        },
+        {
+          "id": "aws-ccp-3",
+          "question": "Which AWS Cloud characteristic describes the ability to dynamically scale computing resources up or down automatically based on fluctuating workload demand?",
+          "options": [
+            "High Availability",
+            "Elasticity",
+            "Fault Tolerance",
+            "Durability"
+          ],
+          "correctAnswerIndex": 1,
+          "explanation": "Elasticity is the ability to acquire resources as you need them and release them when you don't. In AWS, this is typically handled by services like Amazon EC2 Auto Scaling, which scale resources dynamically based on demand to control costs and performance."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertPrep - Modular Certification Preparation</title>
+    <meta name="description" content="A modular, fast, and elegant preparation web application for Google Cloud, AWS, and other professional certifications.">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- App JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo" id="header-logo-btn">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">Cert<span class="highlight">Prep</span></span>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle-btn" class="icon-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Light/Dark Theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- View 1: Dashboard -->
+            <section id="dashboard-view" class="view-section active">
+                <div class="view-header">
+                    <h1>Choose Your Certification</h1>
+                    <p class="subtitle">Select a certification exam to start a practice quiz session with instant explanations.</p>
+                </div>
+                <!-- Dynamic grid of certifications -->
+                <div id="certifications-grid" class="certs-grid">
+                    <div class="loading-spinner" id="dashboard-loading">
+                        <div class="spinner"></div>
+                        <p>Loading certifications...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View 2: Quiz Practice Mode -->
+            <section id="quiz-view" class="view-section">
+                <!-- Quiz Header -->
+                <div class="quiz-header">
+                    <button id="back-to-dashboard-btn" class="text-btn flex-btn">
+                        <span class="btn-arrow">&larr;</span> Dashboard
+                    </button>
+                    <span id="quiz-progress-text" class="quiz-progress-text">Question 1 of 5</span>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-bar-container">
+                    <div id="quiz-progress-bar" class="progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <!-- Question Card -->
+                <div class="question-card">
+                    <h2 id="question-text" class="question-title">Loading question...</h2>
+                    
+                    <form id="quiz-form" class="options-form">
+                        <div id="options-container" class="options-list">
+                            <!-- Options injected dynamically -->
+                        </div>
+                        
+                        <div class="action-bar">
+                            <button type="submit" id="submit-answer-btn" class="primary-btn" disabled>Submit Answer</button>
+                            <button type="button" id="next-question-btn" class="primary-btn secondary-style hidden">Next Question &rarr;</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Feedback & Explanation Card -->
+                <div id="feedback-card" class="feedback-card hidden">
+                    <div class="feedback-status-header">
+                        <span id="feedback-status-icon" class="status-icon">✓</span>
+                        <h3 id="feedback-status-title" class="status-title">Correct!</h3>
+                    </div>
+                    <div class="explanation-content">
+                        <h4>Explanation</h4>
+                        <p id="explanation-text">Explanation goes here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View 3: Scorecard Summary -->
+            <section id="scorecard-view" class="view-section">
+                <div class="scorecard-card">
+                    <div class="scorecard-icon" id="scorecard-badge">🎉</div>
+                    <h1 class="scorecard-title">Quiz Completed!</h1>
+                    <p id="scorecard-cert-name" class="scorecard-cert-name">Google Associate Cloud Engineer</p>
+
+                    <!-- Score Circle -->
+                    <div class="score-display">
+                        <div class="score-circle">
+                            <span id="score-percentage" class="score-number">80%</span>
+                            <span id="score-fraction" class="score-subtext">4 / 5</span>
+                        </div>
+                    </div>
+
+                    <!-- Status Message -->
+                    <div class="result-evaluation" id="result-evaluation-card">
+                        <h3 id="result-status-title">Congratulations, you passed!</h3>
+                        <p id="result-status-message">Great job! You have demonstrated solid readiness for this exam category.</p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="scorecard-actions">
+                        <button id="retry-quiz-btn" class="primary-btn">Retry Quiz</button>
+                        <button id="return-dashboard-btn" class="primary-btn secondary-style">Back to Dashboard</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 CertPrep. Built for Cloud Professionals.</p>
+        </footer>
+    </div>
+</body>
+</html>

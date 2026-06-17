@@ -4,11 +4,15 @@ CertPrep is a fast, elegant, and modular web application designed to help cloud 
 
 The app features a premium glassmorphic layout with persistent sidebar menus, interactive quiz flows, a timed exam simulation mode, custom difficulty tiers, study cheat sheets, and in-depth scorecard reviews.
 
+Now backed by a relational database schema using **Flask-SQLAlchemy** and secure user session management with **Flask-Login**.
+
 ---
 
 ## 🎨 Key Features
 
-- **Persistent Sidebar Navigation**: Quickly navigate between top-level providers (**Google Cloud**, **AWS**, **dbt**, and **Microsoft**) using a modern left-side panel (responsive drawer on mobile) featuring SVGs of their actual logos.
+- **Relational Data Persistence**: Transitioned from raw static JSON storage to a structured SQLite database. Ready to migrate to PostgreSQL for production deployments.
+- **User Authentication**: Secure user registration, password hashing (with Werkzeug), login, and logout. Non-logged-in traffic is automatically redirected to `/login`.
+- **Persistent Sidebar Navigation**: View active session status, switch providers, and access settings/logout actions via the left-side glassmorphic dashboard panel.
 - **Difficulty Tier Selector**: Customise your study session by choosing between **Easy** (foundational concepts), **Medium** (practical scenarios), or **Hard** (architectural troubleshooting) questions.
 - **Four Study Modes & Dashboard Tabs**:
   - **📝 Practice Exams**: Customise your study session by choosing between **Easy**, **Medium**, or **Hard** levels. Select between untimed *Practice Mode* (instant answers and explanations) or timed *Exam Simulation* (20-question, 20-minute simulated tests with dynamic navigation and review flags).
@@ -24,10 +28,11 @@ The app features a premium glassmorphic layout with persistent sidebar menus, in
 
 ## 🛠️ Technology Stack
 
-- **Backend**: Python 3 & Flask
+- **Backend**: Python 3, Flask, Flask-SQLAlchemy (ORM), and Flask-Login (Authentication)
+- **Database**: SQLite (local dev; easily migratable to PostgreSQL via environment configurations)
 - **Frontend**: Vanilla HTML5, Vanilla CSS3 (Custom properties/variables, responsive layouts, animations), and Vanilla JavaScript (Fetch API, zero frameworks)
-- **Data Store**: Structured JSON database (`data/questions.json`)
-- **Utility Script**: Programmatic database compiler (`scripts/populate_questions.py`)
+- **Data Seed**: Structured JSON database (`data/questions.json`) compiled via utility script
+- **Testing**: Python `unittest` framework exercising endpoints, authentication, and database sessions.
 
 ---
 
@@ -60,11 +65,11 @@ The app features a premium glassmorphic layout with persistent sidebar menus, in
 
 4. **Install Dependencies**:
    ```bash
-   pip install flask
+   pip install -r requirements.txt
    ```
 
-5. **Generate the Question Bank**:
-   Generate the 700-question database by running the python compiler script:
+5. **Generate the Question Bank (Optional)**:
+   If `data/questions.json` needs to be rebuilt:
    ```bash
    python3 scripts/populate_questions.py
    ```
@@ -73,9 +78,19 @@ The app features a premium glassmorphic layout with persistent sidebar menus, in
    ```bash
    python app.py
    ```
+   *Note: On startup, the server automatically initializes the database tables (`db.create_all()`) and seeds the data from `data/questions.json` if the database is currently empty.*
 
 7. **Open Your Browser**:
-   Navigate to **[http://localhost:8080](http://localhost:8080)** to start practicing!
+   Navigate to **[http://localhost:8080](http://localhost:8080)**. You will be redirected to `/login`. Click **Register** to create a study account and begin!
+
+---
+
+## 🧪 Running Tests
+
+To verify backend routing, database seeding, and user session rules, execute the unit test suite:
+```bash
+python test_app.py
+```
 
 ---
 
@@ -83,18 +98,25 @@ The app features a premium glassmorphic layout with persistent sidebar menus, in
 
 ```text
 certification-prep-app/
-├── app.py                 # Flask server & backend API endpoints
+├── app.py                 # Flask server, database models, & backend API endpoints
+├── test_app.py            # Unit test suite verifying Auth & DB logic
+├── requirements.txt       # Python dependencies list
 ├── data/
-│   └── questions.json     # 700-question database mapped by provider & difficulty
+│   └── questions.json     # Compiled question bank source
+├── instance/
+│   └── certprep.db        # SQLite database (gitignored)
 ├── scripts/
-│   └── populate_questions.py # Programmatic question bank generator script
+│   ├── populate_questions.py # Programmatic question bank compiler
+│   └── ...                # Other web scraping/generation resources
 ├── static/
 │   ├── css/
-│   │   └── style.css      # Custom properties, sidebars, timers, and accordions
+│   │   └── style.css      # Styling custom properties, layouts, grids, & styles
 │   └── js/
-│       └── app.js         # Single-Page-App state manager, timers, & navigators
+│       └── app.js         # Single-Page-App manager, navigation, & quiz states
 ├── templates/
-│   └── index.html         # Sidebar, exam configurations, & question reviews markup
+│   ├── index.html         # Main app sidebar & workspace dashboard
+│   ├── login.html         # Minimalist glassmorphic login page
+│   └── register.html      # Minimalist glassmorphic registration page
 ├── .gitignore             # Git exclusion rules
 └── README.md              # Project documentation
 ```
@@ -106,6 +128,7 @@ certification-prep-app/
 To add a new exam provider or certificate:
 1. Append your exam configuration, topic matrices, and questions (divided into `easy`, `medium`, and `hard` profiles) to `scripts/populate_questions.py`.
 2. Re-run `python3 scripts/populate_questions.py` to compile the updated JSON.
-3. Update the `providers` dictionary in `static/js/app.js` to define the provider name, icon, and description if adding a new provider.
+3. Delete or rename your local `instance/certprep.db` database file so the server re-seeds on startup, or seed it manually.
+4. Update the `providers` dictionary in `static/js/app.js` to define the provider name, icon, and description if adding a new provider.
 
-The client-side dashboard will dynamically load the new categories, count the exams, and render selection buttons automatically.
+The client-side dashboard will dynamically load the new categories, count the exams, and render selection cards automatically.

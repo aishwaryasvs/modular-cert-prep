@@ -63,10 +63,11 @@
                         <h1 id="dashboard-title">Choose Your Certification</h1>
                         <p class="subtitle" id="dashboard-subtitle">Select an exam category to start practicing with detailed feedback.</p>
                         
-                        <!-- Tabs separating Practice Tests and Cheatsheets -->
+                        <!-- Tabs separating Practice Tests, Cheatsheets, and Flashcards -->
                         <div class="dashboard-tabs">
                             <button class="tab-btn active" id="tab-practice-exams">📝 Practice Exams</button>
                             <button class="tab-btn" id="tab-cheatsheets">📑 Study Cheat Sheets</button>
+                            <button class="tab-btn" id="tab-flashcards">🎴 Study Flashcards</button>
                         </div>
                     </div>
                     
@@ -81,6 +82,11 @@
                     <!-- Dynamic grid of Cheatsheets -->
                     <div id="cheatsheets-grid" class="certs-grid hidden">
                         <!-- Cheatsheet cards populated dynamically -->
+                    </div>
+
+                    <!-- Dynamic grid of Flashcards -->
+                    <div id="flashcards-grid" class="certs-grid hidden">
+                        <!-- Flashcard selector cards populated dynamically -->
                     </div>
                 </section>
 
@@ -273,7 +279,47 @@
                     </div>
                 </section>
 
-                <!-- View 5: Scorecard Summary & detailed reviews -->
+                <!-- View 5: Interactive Flashcard Study View -->
+                <section id="flashcard-view" class="view-section">
+                    <div class="flashcard-container">
+                        <div class="flashcard-header">
+                            <button id="flashcard-back-btn" class="text-btn flex-btn">
+                                <span class="btn-arrow">&larr;</span> Back to Dashboard
+                            </button>
+                            <h1 id="flashcard-title" class="flashcard-title-header">Exam Guide Checklist</h1>
+                            <p class="subtitle">Flip through official exam guide domains and verified skills checklist to evaluate your readiness.</p>
+                        </div>
+                        
+                        <!-- Flashcard Card Component -->
+                        <div class="flashcard-perspective">
+                            <div class="flashcard-card-element" id="flashcard-card-element">
+                                <!-- Front Face -->
+                                <div class="flashcard-face flashcard-front">
+                                    <span class="flashcard-category" id="flashcard-front-category">Domain Objective</span>
+                                    <h2 class="flashcard-front-title" id="flashcard-front-title">Objective Topic</h2>
+                                    <p class="flashcard-instruction">💡 Click anywhere on the card to flip</p>
+                                </div>
+                                <!-- Back Face -->
+                                <div class="flashcard-face flashcard-back">
+                                    <span class="flashcard-category" id="flashcard-back-category">Checklist & Key Skills</span>
+                                    <div class="flashcard-body" id="flashcard-back-content">
+                                        <!-- Checklist items populated dynamically -->
+                                    </div>
+                                    <p class="flashcard-instruction">💡 Click anywhere on the card to flip back</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="flashcard-controls">
+                            <button id="flashcard-prev-btn" class="primary-btn secondary-style">&larr; Prev</button>
+                            <span id="flashcard-progress" class="flashcard-progress-text">Card 1 of 5</span>
+                            <button id="flashcard-next-btn" class="primary-btn secondary-style">Next &rarr;</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View 6: Scorecard Summary & detailed reviews -->
                 <section id="scorecard-view" class="view-section">
                     <div class="scorecard-container">
                         <!-- Score overview card -->

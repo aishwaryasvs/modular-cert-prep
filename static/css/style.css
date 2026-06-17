@@ -1380,6 +1380,124 @@ body {
     }
 }
 
+/* Interactive 3D Flashcards */
+.flashcard-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.flashcard-perspective {
+    perspective: 1200px;
+    margin: 40px auto;
+    max-width: 550px;
+    height: 320px;
+    cursor: pointer;
+}
+
+.flashcard-card-element {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flashcard-card-element.flipped {
+    transform: rotateY(180deg);
+}
+
+.flashcard-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 32px;
+    box-shadow: var(--card-shadow);
+    backdrop-filter: blur(8px);
+    box-sizing: border-box;
+}
+
+.flashcard-front {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.flashcard-back {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(56, 189, 248, 0.03) 100%);
+    transform: rotateY(180deg);
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.flashcard-category {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent-primary);
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: center;
+    width: 100%;
+}
+
+.flashcard-front-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: auto 0;
+    line-height: 1.4;
+}
+
+.flashcard-body {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin: auto 0;
+    width: 100%;
+}
+
+.flashcard-body ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.flashcard-body li {
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.flashcard-instruction {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    font-style: italic;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+}
+
+.flashcard-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    margin-top: 32px;
+}
+
+.flashcard-progress-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
 .hidden {
     display: none !important;
 }

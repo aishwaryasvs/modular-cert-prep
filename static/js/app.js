@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Active session state (null when not in quiz)
     let activeSession = null;
+    
+    // Active flashcard state
+    let currentFlashcards = [];
+    let currentFlashcardIndex = 0;
 
     // Providers registry
     const providers = {
@@ -72,11 +76,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dashboard
     const certificationsGrid = document.getElementById('certifications-grid');
     const cheatsheetsGrid = document.getElementById('cheatsheets-grid');
+    const flashcardsGrid = document.getElementById('flashcards-grid');
     const tabPracticeExams = document.getElementById('tab-practice-exams');
     const tabCheatsheets = document.getElementById('tab-cheatsheets');
+    const tabFlashcards = document.getElementById('tab-flashcards');
     const dashboardLoading = document.getElementById('dashboard-loading');
     const dashboardTitle = document.getElementById('dashboard-title');
     const dashboardSubtitle = document.getElementById('dashboard-subtitle');
+
+    // Interactive Flashcards View
+    const flashcardView = document.getElementById('flashcard-view');
+    const flashcardBackBtn = document.getElementById('flashcard-back-btn');
+    const flashcardCardElement = document.getElementById('flashcard-card-element');
+    const flashcardFrontTitle = document.getElementById('flashcard-front-title');
+    const flashcardBackContent = document.getElementById('flashcard-back-content');
+    const flashcardPrevBtn = document.getElementById('flashcard-prev-btn');
+    const flashcardNextBtn = document.getElementById('flashcard-next-btn');
+    const flashcardProgress = document.getElementById('flashcard-progress');
+    const flashcardFrontCategory = document.getElementById('flashcard-front-category');
+    const flashcardBackCategory = document.getElementById('flashcard-back-category');
 
     // Cheatsheet View
     const cheatsheetView = document.getElementById('cheatsheet-view');
@@ -178,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- View Router ---
     const switchView = (viewName) => {
-        const views = [dashboardView, quizConfigView, quizView, cheatsheetView, scorecardView];
+        const views = [dashboardView, quizConfigView, quizView, cheatsheetView, flashcardView, scorecardView];
         views.forEach(view => {
             view.classList.remove('active');
         });
@@ -194,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (viewName === 'quiz-config') quizConfigView.classList.add('active');
             if (viewName === 'quiz') quizView.classList.add('active');
             if (viewName === 'cheatsheet') cheatsheetView.classList.add('active');
+            if (viewName === 'flashcard') flashcardView.classList.add('active');
             if (viewName === 'scorecard') scorecardView.classList.add('active');
         }, 150);
     };
@@ -366,19 +385,128 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDashboard();
     });
 
+    // --- Interactive Flashcards ---
+    const loadFlashcardDetail = async (certId) => {
+        try {
+            const response = await fetch(`/api/certifications/${certId}`);
+            if (!response.ok) throw new Error('Failed to load certification details');
+            
+            currentCert = await response.json();
+            currentFlashcards = currentCert.flashcards || [];
+            currentFlashcardIndex = 0;
+            showFlashcards();
+        } catch (error) {
+            console.error('Error fetching flashcards:', error);
+            alert('Could not fetch flashcard details. Please try again.');
+        }
+    };
+
+    const showFlashcards = () => {
+        if (!currentFlashcards || currentFlashcards.length === 0) {
+            alert("No flashcards configured for this certification.");
+            return;
+        }
+
+        headerBreadcrumbs.textContent = `${providers[currentProvider].name} / ${currentCert.name} / Flashcards`;
+        
+        // Reset card flip state
+        flashcardCardElement.classList.remove('flipped');
+        
+        renderActiveFlashcard();
+        switchView('flashcard');
+    };
+
+    const renderActiveFlashcard = () => {
+        const card = currentFlashcards[currentFlashcardIndex];
+        const total = currentFlashcards.length;
+
+        // Populate front
+        flashcardFrontCategory.textContent = card.category || "Domain Objective";
+        flashcardFrontTitle.textContent = card.front;
+
+        // Populate back
+        flashcardBackCategory.textContent = (card.category || "Checklist") + " - Skills Checklist";
+        
+        // Format the back content - replace newlines with bullet points
+        const lines = card.back.split('\n');
+        let html = '<ul style="text-align: left; padding-left: 20px; margin: auto 0; width: 100%;">';
+        lines.forEach(line => {
+            const cleaned = line.trim().replace(/^-\s*/, '');
+            if (cleaned) {
+                html += `<li style="margin-bottom: 8px; font-size: 0.92rem; color: var(--text-primary);">${escapeHtml(cleaned)}</li>`;
+            }
+        });
+        html += '</ul>';
+        flashcardBackContent.innerHTML = html;
+
+        // Update progress
+        flashcardProgress.textContent = `Card ${currentFlashcardIndex + 1} of ${total}`;
+
+        // Disable/enable controls
+        flashcardPrevBtn.disabled = currentFlashcardIndex === 0;
+        flashcardNextBtn.disabled = currentFlashcardIndex === total - 1;
+    };
+
+    // Card Flip trigger
+    flashcardCardElement.addEventListener('click', () => {
+        flashcardCardElement.classList.toggle('flipped');
+    });
+
+    flashcardPrevBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // prevent flipping the card when clicking controls
+        if (currentFlashcardIndex > 0) {
+            flashcardCardElement.classList.remove('flipped');
+            // Wait briefly for flip transition to finish before changing content
+            setTimeout(() => {
+                currentFlashcardIndex--;
+                renderActiveFlashcard();
+            }, 150);
+        }
+    });
+
+    flashcardNextBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // prevent flipping the card when clicking controls
+        if (currentFlashcardIndex < currentFlashcards.length - 1) {
+            flashcardCardElement.classList.remove('flipped');
+            // Wait briefly for flip transition to finish before changing content
+            setTimeout(() => {
+                currentFlashcardIndex++;
+                renderActiveFlashcard();
+            }, 150);
+        }
+    });
+
+    flashcardBackBtn.addEventListener('click', () => {
+        switchView('dashboard');
+        renderDashboard();
+    });
+
     // Tab switching handlers
     tabPracticeExams.addEventListener('click', () => {
         tabPracticeExams.classList.add('active');
         tabCheatsheets.classList.remove('active');
+        tabFlashcards.classList.remove('active');
         certificationsGrid.classList.remove('hidden');
         cheatsheetsGrid.classList.add('hidden');
+        flashcardsGrid.classList.add('hidden');
     });
 
     tabCheatsheets.addEventListener('click', () => {
         tabCheatsheets.classList.add('active');
         tabPracticeExams.classList.remove('active');
+        tabFlashcards.classList.remove('active');
         cheatsheetsGrid.classList.remove('hidden');
         certificationsGrid.classList.add('hidden');
+        flashcardsGrid.classList.add('hidden');
+    });
+
+    tabFlashcards.addEventListener('click', () => {
+        tabFlashcards.classList.add('active');
+        tabPracticeExams.classList.remove('active');
+        tabCheatsheets.classList.remove('active');
+        flashcardsGrid.classList.remove('hidden');
+        certificationsGrid.classList.add('hidden');
+        cheatsheetsGrid.classList.add('hidden');
     });
 
     // --- Render Dashboard (Exams under selected provider) ---
@@ -386,11 +514,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset tab state to default (Practice Exams active)
         tabPracticeExams.classList.add('active');
         tabCheatsheets.classList.remove('active');
+        tabFlashcards.classList.remove('active');
         certificationsGrid.classList.remove('hidden');
         cheatsheetsGrid.classList.add('hidden');
+        flashcardsGrid.classList.add('hidden');
 
         certificationsGrid.innerHTML = '';
         cheatsheetsGrid.innerHTML = '';
+        flashcardsGrid.innerHTML = '';
         headerBreadcrumbs.textContent = providers[currentProvider] ? providers[currentProvider].name : 'Dashboard';
 
         const filtered = certifications.filter(c => c.provider === currentProvider);
@@ -398,6 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filtered.length === 0) {
             certificationsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No certifications available under this provider yet.</p>';
             cheatsheetsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No study cheat sheets available under this provider yet.</p>';
+            flashcardsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No flashcards available under this provider yet.</p>';
             return;
         }
 
@@ -444,6 +576,26 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             cheatsheetsGrid.appendChild(csCard);
+
+            // 3. Render Flashcard Card
+            const fcCard = document.createElement('div');
+            fcCard.className = 'cert-card';
+            fcCard.innerHTML = `
+                <div class="cert-icon">${cert.icon || '📄'}</div>
+                <h2 class="cert-title">${cert.name} Flashcards</h2>
+                <p class="cert-desc">Interactive review of the official exam guide domains, skills checklist, and pass requirements.</p>
+                <div class="cert-meta">
+                    <span class="cert-q-count">Exam Guide Checklist</span>
+                    <button class="primary-btn view-fc-btn" data-id="${cert.id}">Study Flashcards</button>
+                </div>
+            `;
+            
+            fcCard.querySelector('.view-fc-btn').addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                loadFlashcardDetail(id);
+            });
+
+            flashcardsGrid.appendChild(fcCard);
         });
     };
 

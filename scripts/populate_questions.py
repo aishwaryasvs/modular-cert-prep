@@ -1,6 +1,7 @@
 import os
 import json
 from cheatsheet_resources import get_cheatsheet_for_cert
+from flashcard_resources import get_flashcards_for_cert
 
 # Ensure output directory exists
 os.makedirs('data', exist_ok=True)
@@ -1086,6 +1087,7 @@ def generate_questions():
             "icon": icon,
             "cheatsheet": cheatsheet,
             "links": get_links_for_cert(cert_id),
+            "flashcards": get_flashcards_for_cert(cert_id),
             "questions": generated_questions
         })
         

@@ -25,6 +25,12 @@ Now backed by a relational database schema using **Flask-SQLAlchemy** and secure
 - **High-Quality Question Pool**: Includes at least **50 realistic questions** per certification (**14 certifications, 700 questions total** in the compiled database), tagged by difficulty.
 - **Advanced Theme Customization**: Features a custom segmented sliding toggle switch in the header supporting four distinct themes: Slate Dark, Frost Light, Cyberpunk, and Cobalt Safe (Color Blind Friendly).
 - **Sleek Micro-Animations**: Active and hover states for navigation links include a smooth left-border accent line animation.
+- **User Performance Dashboard**: A custom metrics tab that queries and aggregates user quiz statistics. Displays:
+  - Total quizzes attempted.
+  - Average percentage score.
+  - Simulation exam pass rate (scores >= 70%).
+  - Total questions resolved.
+- **Quiz Attempts Logging**: Automatically logs all quiz attempt details (score, correct/total count, mode, difficulty, and timestamp) in the relational database (`quiz_attempts` table), with a detailed table showing the top 10 recent attempts.
 
 ---
 

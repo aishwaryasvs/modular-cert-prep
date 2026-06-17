@@ -79,11 +79,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const cheatsheetsGrid = document.getElementById('cheatsheets-grid');
     const flashcardsGrid = document.getElementById('flashcards-grid');
     const checklistGrid = document.getElementById('checklist-grid');
+    const metricsGrid = document.getElementById('metrics-grid');
     const tabPracticeExams = document.getElementById('tab-practice-exams');
     const tabCheatsheets = document.getElementById('tab-cheatsheets');
     const tabFlashcards = document.getElementById('tab-flashcards');
     const tabChecklist = document.getElementById('tab-checklist');
+    const tabMetrics = document.getElementById('tab-metrics');
     const dashboardLoading = document.getElementById('dashboard-loading');
+
+    // Metrics DOM Elements
+    const metricTotalAttempts = document.getElementById('metric-total-attempts');
+    const metricAvgScore = document.getElementById('metric-avg-score');
+    const metricPassRate = document.getElementById('metric-pass-rate');
+    const metricTotalQuestions = document.getElementById('metric-total-questions');
+    const metricsHistoryBody = document.getElementById('metrics-history-body');
     const dashboardTitle = document.getElementById('dashboard-title');
     const dashboardSubtitle = document.getElementById('dashboard-subtitle');
 
@@ -694,8 +703,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Tab switching handlers
-    const allTabBtns = [tabPracticeExams, tabCheatsheets, tabFlashcards, tabChecklist];
-    const allTabGrids = [certificationsGrid, cheatsheetsGrid, flashcardsGrid, checklistGrid];
+    const allTabBtns = [tabPracticeExams, tabCheatsheets, tabFlashcards, tabChecklist, tabMetrics];
+    const allTabGrids = [certificationsGrid, cheatsheetsGrid, flashcardsGrid, checklistGrid, metricsGrid];
 
     const activateTab = (activeBtn, activeGrid) => {
         allTabBtns.forEach(btn => btn.classList.remove('active'));
@@ -708,6 +717,63 @@ document.addEventListener('DOMContentLoaded', () => {
     tabCheatsheets.addEventListener('click', () => activateTab(tabCheatsheets, cheatsheetsGrid));
     tabFlashcards.addEventListener('click', () => activateTab(tabFlashcards, flashcardsGrid));
     tabChecklist.addEventListener('click', () => activateTab(tabChecklist, checklistGrid));
+    tabMetrics.addEventListener('click', () => {
+        activateTab(tabMetrics, metricsGrid);
+        fetchAndRenderMetrics();
+    });
+
+    const fetchAndRenderMetrics = () => {
+        metricsHistoryBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px;"><div class="spinner" style="margin: 0 auto;"></div></td></tr>`;
+        
+        fetch('/api/metrics')
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to fetch metrics');
+                return res.json();
+            })
+            .then(data => {
+                metricTotalAttempts.textContent = data.total_attempts;
+                metricAvgScore.textContent = `${data.avg_score}%`;
+                metricPassRate.textContent = `${data.simulation_pass_rate}%`;
+                metricTotalQuestions.textContent = data.total_questions_answered;
+
+                metricsHistoryBody.innerHTML = '';
+                if (data.recent_attempts.length === 0) {
+                    metricsHistoryBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                                No quiz attempts logged yet. Start studying to see your stats!
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                data.recent_attempts.forEach(attempt => {
+                    const statusClass = attempt.passed ? 'correct' : 'incorrect';
+                    const statusText = attempt.passed ? 'PASS' : 'FAIL';
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${escapeHtml(attempt.certification_name)}</strong> <span style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.8;">(${attempt.provider.toUpperCase()})</span></td>
+                        <td style="text-transform: capitalize;">${escapeHtml(attempt.mode)}</td>
+                        <td style="text-transform: capitalize;">${escapeHtml(attempt.difficulty)}</td>
+                        <td>${attempt.score}% (${attempt.correct_questions}/${attempt.total_questions})</td>
+                        <td><span class="review-badge ${statusClass}" style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold;">${statusText}</span></td>
+                        <td style="white-space: nowrap; font-size: 0.82rem; color: var(--text-secondary);">${escapeHtml(attempt.timestamp)}</td>
+                    `;
+                    metricsHistoryBody.appendChild(tr);
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                metricsHistoryBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--error); padding: 20px;">
+                            Error loading performance metrics. Please try again.
+                        </td>
+                    </tr>
+                `;
+            });
+    };
 
     // --- Render Dashboard (Exams under selected provider) ---
     const renderDashboard = () => {
@@ -1277,6 +1343,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const scorePct = Math.round((correctCount / total) * 100);
         scorePercentage.textContent = `${scorePct}%`;
         scoreFraction.textContent = `${correctCount} / ${total}`;
+
+        // Log quiz attempt to backend database
+        fetch('/api/attempts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                certification_id: currentCert.id,
+                score: scorePct,
+                total_questions: total,
+                correct_questions: correctCount,
+                mode: activeSession.mode === 'exam' ? 'simulation' : 'practice',
+                difficulty: activeSession.difficulty
+            })
+        }).catch(err => console.error('Error logging quiz attempt:', err));
 
         const scoreRingBar = document.getElementById('score-ring-bar');
         if (scoreRingBar) {

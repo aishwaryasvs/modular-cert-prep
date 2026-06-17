@@ -83,6 +83,7 @@
                             <button class="tab-btn" id="tab-cheatsheets">📑 Study Cheat Sheets</button>
                             <button class="tab-btn" id="tab-flashcards">🎴 Study Flashcards</button>
                             <button class="tab-btn" id="tab-checklist">📋 Exam Guide Checklist</button>
+                            <button class="tab-btn" id="tab-metrics">📊 Performance Dashboard</button>
                         </div>
                     </div>
                     
@@ -107,6 +108,64 @@
                     <!-- Dynamic grid of Exam Guide Checklist (domain-based) -->
                     <div id="checklist-grid" class="certs-grid hidden">
                         <!-- Checklist selector cards populated dynamically -->
+                    </div>
+
+                    <!-- Performance Dashboard & User Metrics -->
+                    <div id="metrics-grid" class="metrics-container hidden">
+                        <div class="metrics-summary-row">
+                            <div class="metric-card">
+                                <span class="metric-icon">📊</span>
+                                <div class="metric-details">
+                                    <span class="metric-value" id="metric-total-attempts">0</span>
+                                    <span class="metric-label">Quizzes Taken</span>
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-icon">🎯</span>
+                                <div class="metric-details">
+                                    <span class="metric-value" id="metric-avg-score">0%</span>
+                                    <span class="metric-label">Average Score</span>
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-icon">⚡</span>
+                                <div class="metric-details">
+                                    <span class="metric-value" id="metric-pass-rate">0%</span>
+                                    <span class="metric-label">Simulation Pass Rate</span>
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-icon">✅</span>
+                                <div class="metric-details">
+                                    <span class="metric-value" id="metric-total-questions">0</span>
+                                    <span class="metric-label">Questions Solved</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metrics-history-section">
+                            <h3 class="history-title">Recent Quiz Attempts</h3>
+                            <div class="history-table-wrapper">
+                                <table class="history-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Certification</th>
+                                            <th>Mode</th>
+                                            <th>Difficulty</th>
+                                            <th>Score</th>
+                                            <th>Status</th>
+                                            <th>Date & Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="metrics-history-body">
+                                        <!-- Populated dynamically via JS -->
+                                        <tr>
+                                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 20px;">No quiz attempts logged yet. Start studying to see your stats!</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </section>
 

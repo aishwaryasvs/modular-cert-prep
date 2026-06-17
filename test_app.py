@@ -130,5 +130,47 @@ class TestCertPrepAuthAndDB(unittest.TestCase):
             user = User.query.filter_by(username=creds['username']).first()
             self.assertIsNotNone(user)
 
+    def test_quiz_attempts_and_metrics(self):
+        # 1. Bypass login to sign in
+        response = self.client.get('/login/bypass', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+        # 2. Post a new quiz attempt
+        attempt_data = {
+            "certification_id": "google-associate-cloud-engineer",
+            "score": 80.0,
+            "total_questions": 10,
+            "correct_questions": 8,
+            "mode": "simulation",
+            "difficulty": "medium"
+        }
+        response = self.client.post('/api/attempts', 
+                                    data=json.dumps(attempt_data), 
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        res_data = json.loads(response.data)
+        self.assertTrue(res_data['success'])
+        self.assertIn('attempt_id', res_data)
+
+        # 3. Retrieve metrics and check if stats are computed correctly
+        response = self.client.get('/api/metrics')
+        self.assertEqual(response.status_code, 200)
+        metrics = json.loads(response.data)
+        
+        self.assertEqual(metrics['total_attempts'], 1)
+        self.assertEqual(metrics['avg_score'], 80.0)
+        self.assertEqual(metrics['total_questions_answered'], 10)
+        self.assertEqual(metrics['total_correct_questions'], 8)
+        self.assertEqual(metrics['simulation_attempts'], 1)
+        self.assertEqual(metrics['simulation_pass_rate'], 100.0)
+        self.assertEqual(metrics['certifications_started'], 1)
+        
+        # Verify attempt details are present
+        self.assertEqual(len(metrics['recent_attempts']), 1)
+        attempt = metrics['recent_attempts'][0]
+        self.assertEqual(attempt['certification_id'], 'google-associate-cloud-engineer')
+        self.assertEqual(attempt['score'], 80.0)
+        self.assertEqual(attempt['passed'], True)
+
 if __name__ == '__main__':
     unittest.main()

@@ -111,6 +111,21 @@ class Question(db.Model):
     difficulty = db.Column(db.String(50), nullable=False)
     explanation = db.Column(db.Text, nullable=False)
 
+class QuizAttempt(db.Model):
+    __tablename__ = 'quiz_attempts'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    certification_id = db.Column(db.String(100), db.ForeignKey('certifications.id'), nullable=False)
+    score = db.Column(db.Float, nullable=False)
+    total_questions = db.Column(db.Integer, nullable=False)
+    correct_questions = db.Column(db.Integer, nullable=False)
+    mode = db.Column(db.String(50), nullable=False)
+    difficulty = db.Column(db.String(50), nullable=True)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    user = db.relationship('User', backref=db.backref('attempts', lazy=True))
+    certification = db.relationship('Certification', backref=db.backref('attempts', lazy=True))
+
 
 # --- User Loader ---
 @login_manager.user_loader
@@ -389,6 +404,106 @@ def get_certification_details(cert_id):
         "questions": questions_data
     }
     return jsonify(result)
+
+
+@app.route('/api/attempts', methods=['POST'])
+@login_required
+def save_attempt():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid payload"}), 400
+    
+    cert_id = data.get('certification_id')
+    score = data.get('score')
+    total_questions = data.get('total_questions')
+    correct_questions = data.get('correct_questions')
+    mode = data.get('mode')
+    difficulty = data.get('difficulty', 'all')
+    
+    if not cert_id or score is None or total_questions is None or correct_questions is None or not mode:
+        return jsonify({"error": "Missing required fields"}), 400
+        
+    cert = db.session.get(Certification, cert_id)
+    if not cert:
+        return jsonify({"error": "Certification not found"}), 404
+        
+    attempt = QuizAttempt(
+        user_id=current_user.id,
+        certification_id=cert_id,
+        score=float(score),
+        total_questions=int(total_questions),
+        correct_questions=int(correct_questions),
+        mode=mode,
+        difficulty=difficulty
+    )
+    db.session.add(attempt)
+    db.session.commit()
+    
+    return jsonify({"success": True, "attempt_id": attempt.id}), 201
+
+
+@app.route('/api/metrics', methods=['GET'])
+@login_required
+def get_metrics():
+    attempts = QuizAttempt.query.filter_by(user_id=current_user.id).order_by(QuizAttempt.timestamp.desc()).all()
+    
+    total_attempts = len(attempts)
+    avg_score = 0.0
+    total_correct = 0
+    total_questions = 0
+    simulation_attempts = 0
+    simulation_passed = 0
+    
+    attempts_list = []
+    for a in attempts:
+        avg_score += a.score
+        total_correct += a.correct_questions
+        total_questions += a.total_questions
+        
+        is_pass = a.score >= 70.0
+        if a.mode == 'simulation':
+            simulation_attempts += 1
+            if is_pass:
+                simulation_passed += 1
+                
+        attempts_list.append({
+            "id": a.id,
+            "certification_name": a.certification.name,
+            "certification_id": a.certification_id,
+            "provider": a.certification.provider,
+            "score": a.score,
+            "correct_questions": a.correct_questions,
+            "total_questions": a.total_questions,
+            "mode": a.mode,
+            "difficulty": a.difficulty,
+            "timestamp": a.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            "passed": is_pass
+        })
+        
+    if total_attempts > 0:
+        avg_score = round(avg_score / total_attempts, 1)
+    else:
+        avg_score = 0.0
+        
+    sim_pass_rate = 0.0
+    if simulation_attempts > 0:
+        sim_pass_rate = round((simulation_passed / simulation_attempts) * 100, 1)
+        
+    # Unique certifications started
+    started_certs = db.session.query(QuizAttempt.certification_id).filter_by(user_id=current_user.id).distinct().count()
+    
+    metrics = {
+        "total_attempts": total_attempts,
+        "avg_score": avg_score,
+        "total_questions_answered": total_questions,
+        "total_correct_questions": total_correct,
+        "simulation_attempts": simulation_attempts,
+        "simulation_pass_rate": sim_pass_rate,
+        "certifications_started": started_certs,
+        "recent_attempts": attempts_list[:10]
+    }
+    
+    return jsonify(metrics)
 
 
 def seed_admin_user():

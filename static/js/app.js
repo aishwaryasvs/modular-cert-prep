@@ -9,11 +9,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Providers registry
     const providers = {
-        'google-cloud': { name: 'Google Cloud', icon: '☁️', desc: 'Google Cloud Platform professional exam preparation.' },
-        'aws': { name: 'AWS', icon: '🍊', desc: 'Amazon Web Services cloud computing certifications.' },
-        'dbt': { name: 'dbt', icon: '🛠️', desc: 'dbt Analytics Engineering modeling & engineering tests.' },
-        'microsoft': { name: 'Microsoft', icon: '🔷', desc: 'Microsoft Azure cloud platform technologies.' }
+        'google-cloud': { 
+            name: 'Google Cloud', 
+            icon: `<svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle;">
+                <path d="M12 2L4 6.5 L12 11 L20 6.5 Z" fill="#FBBC05"/>
+                <path d="M4 6.5 L4 15.5 L12 20 L12 11 Z" fill="#4285F4"/>
+                <path d="M12 11 L12 20 L20 15.5 L20 6.5 Z" fill="#EA4335"/>
+                <path d="M12 11L4 6.5" stroke="#34A853" stroke-width="1"/>
+            </svg>`, 
+            desc: 'Google Cloud Platform professional exam preparation.' 
+        },
+        'aws': { 
+            name: 'AWS', 
+            icon: `<svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle;">
+                <path d="M4.5 16.5c3.2 2 7.8 2.5 11.2 1.2 2.5-1 4-2.8 4.6-3.8" stroke="#FF9900" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <path d="M20.3 13.8l-0.8 2.8m0.8-2.8l-2.8 0.8" stroke="#FF9900" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <text x="3" y="11" fill="currentColor" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-weight="800" font-size="9px" letter-spacing="-0.5px">aws</text>
+            </svg>`, 
+            desc: 'Amazon Web Services cloud computing certifications.' 
+        },
+        'dbt': { 
+            name: 'dbt', 
+            icon: `<svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align: middle;">
+                <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm7 14.2l-7 3.9-7-3.9V8.8l7-3.9 7 3.9v7.4z" fill="#FF6B4A"/>
+                <polygon points="12,7 7,10 7,14 12,17 17,14 17,10" fill="#FF6B4A" opacity="0.8"/>
+            </svg>`, 
+            desc: 'dbt Analytics Engineering modeling & engineering tests.' 
+        },
+        'microsoft': { 
+            name: 'Microsoft', 
+            icon: `<svg viewBox="0 0 23 23" width="20" height="20" style="vertical-align: middle;">
+                <rect x="0" y="0" width="10.5" height="10.5" fill="#F25022"/>
+                <rect x="11.5" y="0" width="10.5" height="10.5" fill="#7FBA00"/>
+                <rect x="0" y="11.5" width="10.5" height="10.5" fill="#00A4EF"/>
+                <rect x="11.5" y="11.5" width="10.5" height="10.5" fill="#FFB900"/>
+            </svg>`, 
+            desc: 'Microsoft Azure cloud platform technologies.' 
+        }
     };
+
 
     // --- DOM Elements ---
     // Sidebar

@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Theme Management ---
     const initTheme = () => {
         const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.body.classList.remove('light-theme', 'cyberpunk-theme', 'emerald-theme');
+        document.body.classList.remove('light-theme', 'cyberpunk-theme', 'cobalt-theme');
         if (savedTheme !== 'dark') {
             document.body.classList.add(`${savedTheme}-theme`);
         }
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggleOptions.forEach(opt => {
         opt.addEventListener('click', () => {
             const selectedTheme = opt.getAttribute('data-theme');
-            document.body.classList.remove('light-theme', 'cyberpunk-theme', 'emerald-theme');
+            document.body.classList.remove('light-theme', 'cyberpunk-theme', 'cobalt-theme');
             if (selectedTheme !== 'dark') {
                 document.body.classList.add(`${selectedTheme}-theme`);
             }

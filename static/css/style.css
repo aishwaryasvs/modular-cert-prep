@@ -84,28 +84,28 @@ body.cyberpunk-theme {
     --card-shadow: 0 8px 32px 0 rgba(255, 0, 127, 0.15);
 }
 
-body.emerald-theme {
-    /* Emerald Theme Override */
-    --bg-primary: #06110b;
-    --bg-secondary: #030805;
-    --bg-card: rgba(12, 32, 22, 0.65);
-    --bg-active: rgba(16, 185, 129, 0.15);
-    --text-primary: #ecfdf5;
-    --text-secondary: #a7f3d0;
-    --border-color: rgba(16, 185, 129, 0.3);
-    --accent-primary: #10b981;
-    --accent-hover: #059669;
-    --accent-glow: rgba(16, 185, 129, 0.25);
+body.cobalt-theme {
+    /* Cobalt Safe Theme Override (Color blindness friendly - Deuteranopia/Protanopia safe) */
+    --bg-primary: #0b1329;
+    --bg-secondary: #050a18;
+    --bg-card: rgba(19, 31, 56, 0.7);
+    --bg-active: rgba(59, 130, 246, 0.18);
+    --text-primary: #f1f5f9;
+    --text-secondary: #93c5fd;
+    --border-color: rgba(59, 130, 246, 0.35);
+    --accent-primary: #3b82f6; /* Cobalt Blue */
+    --accent-hover: #2563eb;
+    --accent-glow: rgba(59, 130, 246, 0.35);
     
-    --success: #34d399;
-    --success-bg: rgba(52, 211, 153, 0.08);
-    --success-border: rgba(52, 211, 153, 0.3);
+    --success: #38bdf8; /* Cyan/Light Blue instead of Green */
+    --success-bg: rgba(56, 189, 248, 0.08);
+    --success-border: rgba(56, 189, 248, 0.3);
     
-    --error: #fb7185;
-    --error-bg: rgba(251, 113, 133, 0.08);
-    --error-border: rgba(251, 113, 133, 0.3);
+    --error: #ea580c; /* Orange/Vermilion instead of Red */
+    --error-bg: rgba(234, 88, 12, 0.08);
+    --error-border: rgba(234, 88, 12, 0.3);
     
-    --card-shadow: 0 8px 32px 0 rgba(16, 185, 129, 0.1);
+    --card-shadow: 0 8px 32px 0 rgba(59, 130, 246, 0.15);
 }
     
     --card-shadow: 0 8px 30px 0 rgba(148, 163, 184, 0.12);
@@ -2127,7 +2127,7 @@ body[data-theme-active="light"] .theme-toggle-switch::before {
 body[data-theme-active="cyberpunk"] .theme-toggle-switch::before {
     transform: translateX(68px);
 }
-body[data-theme-active="emerald"] .theme-toggle-switch::before {
+body[data-theme-active="cobalt"] .theme-toggle-switch::before {
     transform: translateX(102px);
 }
 

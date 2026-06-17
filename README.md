@@ -23,7 +23,7 @@ Now backed by a relational database schema using **Flask-SQLAlchemy** and secure
 - **Interactive Question Navigation Grid**: A visual map displaying answered, current, and flagged questions, allowing users to jump directly to any question during simulations.
 - **Detailed Scorecard Review**: After completion, view your percentage score, a color-coded success badge, and an expandable accordion breakdown of every question to inspect choices, correct options, and explanations. Accordions utilize **smooth CSS-only grid height transitions**.
 - **High-Quality Question Pool**: Includes at least **50 realistic questions** per certification (**14 certifications, 700 questions total** in the compiled database), tagged by difficulty.
-- **Advanced Theme Customization**: Features a custom segmented sliding toggle switch in the header supporting four distinct themes: Slate Dark, Frost Light, Cyberpunk, and Emerald.
+- **Advanced Theme Customization**: Features a custom segmented sliding toggle switch in the header supporting four distinct themes: Slate Dark, Frost Light, Cyberpunk, and Cobalt Safe (Color Blind Friendly).
 - **Sleek Micro-Animations**: Active and hover states for navigation links include a smooth left-border accent line animation.
 
 ---

@@ -12,17 +12,19 @@ Now backed by a relational database schema using **Flask-SQLAlchemy** and secure
 
 - **Relational Data Persistence**: Transitioned from raw static JSON storage to a structured SQLite database. Ready to migrate to PostgreSQL for production deployments.
 - **User Authentication**: Secure user registration, password hashing (with Werkzeug), login, and logout. Non-logged-in traffic is automatically redirected to `/login`.
-- **Persistent Sidebar Navigation**: View active session status, switch providers, and access settings/logout actions via the left-side glassmorphic dashboard panel.
+- **Easily Accessible Logout**: A prominent, glassmorphic logout button located in the application header with a clean SVG icon that is responsive (collapses to icon-only on mobile devices for improved accessibility).
+- **Persistent Sidebar Navigation**: View active session status, switch providers, and navigate easily using the left-side glassmorphic dashboard panel.
 - **Difficulty Tier Selector**: Customise your study session by choosing between **Easy** (foundational concepts), **Medium** (practical scenarios), or **Hard** (architectural troubleshooting) questions.
 - **Four Study Modes & Dashboard Tabs**:
   - **📝 Practice Exams**: Customise your study session by choosing between **Easy**, **Medium**, or **Hard** levels. Select between untimed *Practice Mode* (instant answers and explanations) or timed *Exam Simulation* (20-question, 20-minute simulated tests with dynamic navigation and review flags).
-  - **📑 Study Cheat Sheets**: Outline core concepts, common CLI command structures, and architectural patterns.
+  - **📑 Study Cheat Sheets**: Outline core concepts, common CLI command structures, and architectural patterns. Includes a **quick-copy clipboard utility** for CLI commands accompanied by a sliding toast alert.
   - **🎴 Study Flashcards**: Active-recall Q&A flashcards covering service definitions, limits, commands, and common gotchas.
   - **📋 Exam Guide Checklist**: Flip-based domain-by-domain breakdowns of the official exam guide with a skills checklist.
 - **Interactive Question Navigation Grid**: A visual map displaying answered, current, and flagged questions, allowing users to jump directly to any question during simulations.
-- **Detailed Scorecard Review**: After completion, view your percentage score, a color-coded success badge, and an expandable accordion breakdown of every question to inspect your choices, correct options, and detailed explanations.
+- **Detailed Scorecard Review**: After completion, view your percentage score, a color-coded success badge, and an expandable accordion breakdown of every question to inspect choices, correct options, and explanations. Accordions utilize **smooth CSS-only grid height transitions**.
 - **High-Quality Question Pool**: Includes at least **50 realistic questions** per certification (**14 certifications, 700 questions total** in the compiled database), tagged by difficulty.
-- **Theme Customization**: Beautiful glassmorphism theme, with a theme switcher supporting persistent dark-mode and light-mode preferences.
+- **Advanced Theme Customization**: Features a custom segmented sliding toggle switch in the header supporting four distinct themes: Slate Dark, Frost Light, Cyberpunk, and Emerald.
+- **Sleek Micro-Animations**: Active and hover states for navigation links include a smooth left-border accent line animation.
 
 ---
 

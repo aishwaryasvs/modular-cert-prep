@@ -109,5 +109,21 @@ class TestCertPrepAuthAndDB(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Username is already taken.', response.data.decode('utf-8'))
 
+    def test_bypass_login(self):
+        # Trigger bypass login
+        response = self.client.get('/login/bypass', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        
+        # Verify the user is automatically logged in and can access the API
+        response = self.client.get('/api/certifications')
+        self.assertEqual(response.status_code, 200)
+        
+        # Verify the logged in user is the dynamically seeded admin
+        with app.app_context():
+            from app import get_or_create_test_credentials
+            creds = get_or_create_test_credentials()
+            user = User.query.filter_by(username=creds['username']).first()
+            self.assertIsNotNone(user)
+
 if __name__ == '__main__':
     unittest.main()

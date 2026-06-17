@@ -1,5 +1,6 @@
 import os
 import json
+from cheatsheet_resources import get_cheatsheet_for_cert
 
 # Ensure output directory exists
 os.makedirs('data', exist_ok=True)
@@ -1034,7 +1035,7 @@ def generate_questions():
         name = cert["name"]
         desc = cert["description"]
         icon = cert["icon"]
-        cheatsheet = cert["cheatsheet"]
+        cheatsheet = get_cheatsheet_for_cert(cert_id)
         topics = cert["topics"]
         
         generated_questions = []

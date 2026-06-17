@@ -1,27 +1,31 @@
-# CertPrep - Modular Certification Preparation App
+# CertPrep - Professional Certification Prep App
 
-CertPrep is a fast, elegant, and modular web application designed to help cloud professionals prepare for certification exams (e.g., **Google Associate Cloud Engineer** and **AWS Certified Cloud Practitioner**). 
+CertPrep is a fast, elegant, and modular web application designed to help cloud professionals prepare for certification exams (e.g., **Google Cloud**, **AWS**, **dbt**, and **Microsoft**). 
 
-The app features a premium, modern design with a glassmorphic aesthetic, interactive quiz flows, instant feedback with explanations, and a scorecard summary at the end of each session.
+The app features a premium, responsive sidebar layout, interactive quiz flows, a timed exam simulation mode, difficulty configurations, and an in-depth scorecard review tool.
 
 ---
 
 ## 🎨 Key Features
 
-- **Multi-Exam Dashboard**: Choose from different certifications dynamically loaded from a single question bank.
-- **Interactive Quiz View**: Practice mode showing one multiple-choice question at a time with clean, card-styled option selectors.
-- **Immediate Feedback**: Instantly displays correct/incorrect answers with color highlights (green/red) and in-depth educational explanations.
-- **Rich Scorecard Summary**: Computes a percentage score, presents a dynamic visual status badge, and evaluates readiness (passing benchmark set at 70%).
-- **Theme Customization**: Beautiful default dark-mode styling with a toggle switch to a clean light-mode theme (with preference persistent in `localStorage`).
-- **Zero Frontend Frameworks**: Built using only plain vanilla HTML5, CSS3, and ES6+ JavaScript with standard Fetch API requests.
+- **Persistent Sidebar Navigation**: Quickly navigate between top-level providers (**Google Cloud**, **AWS**, **dbt**, and **Microsoft**) using a modern left-side panel (responsive drawer on mobile).
+- **Difficulty Tier Selector**: Customise your study session by choosing between **Easy** (foundational concepts), **Medium** (practical scenarios), or **Hard** (architectural troubleshooting) questions.
+- **Dual Study Modes**:
+  - **Practice Mode**: An untimed session showing immediate correct/incorrect feedback with comprehensive educational explanations after every question.
+  - **Exam Simulation**: A timed, realistic test environment. It shuffles and limits the pool to 20 questions with a 20-minute timer. Features a question navigation grid map and "Flag for Review" tools, saving results for the end.
+- **Interactive Question Navigation Grid**: A visual map displaying answered, current, and flagged questions, allowing users to jump directly to any question during simulations.
+- **Detailed Scorecard Review**: After completion, view your percentage score, a color-coded success badge, and an expandable accordion breakdown of every question to inspect your choices, correct options, and detailed explanations.
+- **High-Quality Question Pool**: Includes at least **50 realistic questions** per certification (250 questions total), tagged by difficulty.
+- **Theme Customization**: Beautiful glassmorphism theme, with a theme switcher supporting persistent dark-mode and light-mode preferences.
 
 ---
 
 ## 🛠️ Technology Stack
 
 - **Backend**: Python 3 & Flask
-- **Frontend**: Vanilla HTML5, Vanilla CSS3 (Custom properties/variables, animations), and Vanilla JavaScript (Fetch API)
+- **Frontend**: Vanilla HTML5, Vanilla CSS3 (Custom properties/variables, responsive layouts, animations), and Vanilla JavaScript (Fetch API, zero frameworks)
 - **Data Store**: Structured JSON database (`data/questions.json`)
+- **Utility Script**: Programmatic database compiler (`scripts/populate_questions.py`)
 
 ---
 
@@ -57,12 +61,18 @@ The app features a premium, modern design with a glassmorphic aesthetic, interac
    pip install flask
    ```
 
-5. **Run the Flask Server**:
+5. **Generate the Question Bank**:
+   Generate the 250-question database by running the python compiler script:
+   ```bash
+   python3 scripts/populate_questions.py
+   ```
+
+6. **Run the Flask Server**:
    ```bash
    python app.py
    ```
 
-6. **Open Your Browser**:
+7. **Open Your Browser**:
    Navigate to **[http://localhost:8080](http://localhost:8080)** to start practicing!
 
 ---
@@ -73,14 +83,16 @@ The app features a premium, modern design with a glassmorphic aesthetic, interac
 certification-prep-app/
 ├── app.py                 # Flask server & backend API endpoints
 ├── data/
-│   └── questions.json     # Modular database mapping certification categories & questions
+│   └── questions.json     # 250-question database mapped by provider & difficulty
+├── scripts/
+│   └── populate_questions.py # Programmatic question bank generator script
 ├── static/
 │   ├── css/
-│   │   └── style.css      # Glassmorphic dark/light styles, animations, & variables
+│   │   └── style.css      # Custom properties, sidebars, timers, and accordions
 │   └── js/
-│       └── app.js         # Single-Page-App client logic, Fetch API, & quiz flow
+│       └── app.js         # Single-Page-App state manager, timers, & navigators
 ├── templates/
-│   └── index.html         # Main dashboard, quiz layout, & scorecard structure
+│   └── index.html         # Sidebar, exam configurations, & question reviews markup
 ├── .gitignore             # Git exclusion rules
 └── README.md              # Project documentation
 ```
@@ -89,29 +101,9 @@ certification-prep-app/
 
 ## 🔧 Expanding with More Certifications
 
-Adding a new certification (e.g., *Azure Fundamentals* or *Google Cloud Digital Leader*) is extremely simple. Just append a new certification object to the `"certifications"` array inside `data/questions.json`:
+To add a new exam provider or certificate:
+1. Append your exam configuration, topic matrices, and questions (divided into `easy`, `medium`, and `hard` profiles) to `scripts/populate_questions.py`.
+2. Re-run `python3 scripts/populate_questions.py` to compile the updated JSON.
+3. Update the `providers` dictionary in `static/js/app.js` to define the provider name, icon, and description.
 
-```json
-{
-  "id": "microsoft-azure-fundamentals",
-  "name": "Microsoft Azure Fundamentals (AZ-900)",
-  "description": "Validates foundational knowledge of cloud services and how those services are provided with Microsoft Azure.",
-  "icon": "☁️",
-  "questions": [
-    {
-      "id": "az-900-1",
-      "question": "Which cloud service model provides maximum user control over the underlying operating systems and networking hardware?",
-      "options": [
-        "Software as a Service (SaaS)",
-        "Platform as a Service (PaaS)",
-        "Infrastructure as a Service (IaaS)",
-        "Serverless Computing"
-      ],
-      "correctAnswerIndex": 2,
-      "explanation": "Infrastructure as a Service (IaaS) provides virtualized computing resources over the internet, giving users full access and management control over operating systems, storage, and networking."
-    }
-  ]
-}
-```
-
-The Flask API will automatically read this data and dynamically render it on the home dashboard!
+The client-side dashboard will dynamically load the new categories, count the exams, and render selection buttons automatically.

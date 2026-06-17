@@ -2,11 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Application State ---
     let certifications = [];
     let currentCert = null;
-    let currentQuestionIndex = 0;
-    let selectedOptionIndex = null;
-    let score = 0;
-    let currentProvider = null; // Track chosen provider
+    let currentProvider = 'google-cloud'; // Default active provider
 
+    // Active session state (null when not in quiz)
+    let activeSession = null;
+
+    // Providers registry
     const providers = {
         'google-cloud': { name: 'Google Cloud', icon: '☁️', desc: 'Google Cloud Platform professional exam preparation.' },
         'aws': { name: 'AWS', icon: '🍊', desc: 'Amazon Web Services cloud computing certifications.' },
@@ -15,32 +16,60 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- DOM Elements ---
-    // Views
-    const dashboardView = document.getElementById('dashboard-view');
-    const quizView = document.getElementById('quiz-view');
-    const scorecardView = document.getElementById('scorecard-view');
-
-    // Header & Global
-    const headerLogoBtn = document.getElementById('header-logo-btn');
+    // Sidebar
+    const appSidebar = document.getElementById('app-sidebar');
+    const sidebarProvidersList = document.getElementById('sidebar-providers-list');
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+    const sidebarLogoBtn = document.getElementById('sidebar-logo-btn');
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const themeIcon = themeToggleBtn.querySelector('.theme-icon');
+
+    // Breadcrumbs & Header
+    const headerBreadcrumbs = document.getElementById('header-breadcrumbs');
+    const headerStatusArea = document.getElementById('header-status-area');
+
+    // Views
+    const dashboardView = document.getElementById('dashboard-view');
+    const quizConfigView = document.getElementById('quiz-config-view');
+    const quizView = document.getElementById('quiz-view');
+    const scorecardView = document.getElementById('scorecard-view');
 
     // Dashboard
     const certificationsGrid = document.getElementById('certifications-grid');
     const dashboardLoading = document.getElementById('dashboard-loading');
-    const dashboardTitle = dashboardView.querySelector('.view-header h1');
-    const dashboardSubtitle = dashboardView.querySelector('.view-header .subtitle');
+    const dashboardTitle = document.getElementById('dashboard-title');
+    const dashboardSubtitle = document.getElementById('dashboard-subtitle');
+
+    // Config View
+    const configBackBtn = document.getElementById('config-back-btn');
+    const configExamTitle = document.getElementById('config-exam-title');
+    const configExamDesc = document.getElementById('config-exam-desc');
+    const quizConfigForm = document.getElementById('quiz-config-form');
 
     // Quiz View
-    const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+    const quitQuizBtn = document.getElementById('quit-quiz-btn');
+    const quizDifficultyBadge = document.getElementById('quiz-difficulty-badge');
     const quizProgressText = document.getElementById('quiz-progress-text');
     const quizProgressBar = document.getElementById('quiz-progress-bar');
     const questionText = document.getElementById('question-text');
     const quizForm = document.getElementById('quiz-form');
     const optionsContainer = document.getElementById('options-container');
+    
+    // Actions
+    const flagContainer = document.getElementById('flag-container');
+    const flagCheckbox = document.getElementById('flag-checkbox');
+    const prevQuestionBtn = document.getElementById('prev-question-btn');
     const submitAnswerBtn = document.getElementById('submit-answer-btn');
     const nextQuestionBtn = document.getElementById('next-question-btn');
     
+    // Simulation Panel
+    const quizSidebarPanel = document.getElementById('quiz-sidebar-panel');
+    const timerDisplayCard = document.getElementById('timer-display-card');
+    const quizTimer = document.getElementById('quiz-timer');
+    const questionGridNav = document.getElementById('question-grid-nav');
+    const submitExamBtn = document.getElementById('submit-exam-btn');
+
     // Feedback Card
     const feedbackCard = document.getElementById('feedback-card');
     const feedbackStatusIcon = document.getElementById('feedback-status-icon');
@@ -55,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultEvaluationCard = document.getElementById('result-evaluation-card');
     const resultStatusTitle = document.getElementById('result-status-title');
     const resultStatusMessage = document.getElementById('result-status-message');
+    const reviewQuestionsList = document.getElementById('review-questions-list');
     const retryQuizBtn = document.getElementById('retry-quiz-btn');
     const returnDashboardBtn = document.getElementById('return-dashboard-btn');
 
@@ -81,35 +111,108 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- View Routing Helpers ---
+    // --- Mobile Sidebar Toggle ---
+    mobileMenuToggle.addEventListener('click', () => {
+        appSidebar.classList.add('open');
+    });
+
+    sidebarCloseBtn.addEventListener('click', () => {
+        appSidebar.classList.remove('open');
+    });
+
+    // Close sidebar on mobile click of logo
+    sidebarLogoBtn.addEventListener('click', () => {
+        appSidebar.classList.remove('open');
+        handleNavigationExit(() => {
+            switchView('dashboard');
+            renderDashboard();
+        });
+    });
+
+    // --- View Router ---
     const switchView = (viewName) => {
-        // Fade out active views, then show the target view
-        const views = [dashboardView, quizView, scorecardView];
+        const views = [dashboardView, quizConfigView, quizView, scorecardView];
         views.forEach(view => {
-            if (view.classList.contains('active')) {
-                view.classList.remove('active');
-            }
+            view.classList.remove('active');
         });
 
+        // Hide config pane context in header
+        if (viewName === 'dashboard') {
+            headerBreadcrumbs.textContent = providers[currentProvider] ? providers[currentProvider].name : 'Dashboard';
+            headerStatusArea.innerHTML = '';
+        }
+
         setTimeout(() => {
-            if (viewName === 'dashboard') {
-                dashboardView.classList.add('active');
-            } else if (viewName === 'quiz') {
-                quizView.classList.add('active');
-            } else if (viewName === 'scorecard') {
-                scorecardView.classList.add('active');
-            }
-        }, 150); // slight delay to allow smooth fade out/in
+            if (viewName === 'dashboard') dashboardView.classList.add('active');
+            if (viewName === 'quiz-config') quizConfigView.classList.add('active');
+            if (viewName === 'quiz') quizView.classList.add('active');
+            if (viewName === 'scorecard') scorecardView.classList.add('active');
+        }, 150);
     };
 
-    // --- Fetch APIs ---
+    // Warn if active session exists when clicking nav
+    const handleNavigationExit = (callback) => {
+        if (activeSession) {
+            if (confirm('Are you sure you want to exit your active study/testing session? All current progress will be lost.')) {
+                cleanupActiveSession();
+                callback();
+            }
+        } else {
+            callback();
+        }
+    };
+
+    const cleanupActiveSession = () => {
+        if (activeSession && activeSession.timerInterval) {
+            clearInterval(activeSession.timerInterval);
+        }
+        activeSession = null;
+    };
+
+    // --- Render Sidebar Providers ---
+    const renderSidebar = () => {
+        sidebarProvidersList.innerHTML = '';
+        Object.keys(providers).forEach(providerId => {
+            const provider = providers[providerId];
+            
+            const btn = document.createElement('button');
+            btn.className = `nav-item ${providerId === currentProvider ? 'active' : ''}`;
+            btn.setAttribute('data-provider', providerId);
+            btn.innerHTML = `
+                <span class="nav-icon">${provider.icon}</span>
+                <span class="nav-label">${provider.name}</span>
+            `;
+
+            btn.addEventListener('click', () => {
+                handleNavigationExit(() => {
+                    currentProvider = providerId;
+                    
+                    // Set active class visually
+                    const allItems = sidebarProvidersList.querySelectorAll('.nav-item');
+                    allItems.forEach(i => i.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Close sidebar on mobile
+                    appSidebar.classList.remove('open');
+
+                    switchView('dashboard');
+                    renderDashboard();
+                });
+            });
+
+            sidebarProvidersList.appendChild(btn);
+        });
+    };
+
+    // --- Fetch API ---
     const fetchCertifications = async () => {
         try {
             dashboardLoading.classList.remove('hidden');
             const response = await fetch('/api/certifications');
             if (!response.ok) throw new Error('Failed to load certifications');
             
-            certifications = await response.ok ? await response.json() : [];
+            certifications = await response.json();
+            renderSidebar();
             renderDashboard();
         } catch (error) {
             console.error('Error fetching certifications:', error);
@@ -129,230 +232,501 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Failed to load certification details');
             
             currentCert = await response.json();
-            startQuiz();
+            showQuizConfigScreen();
         } catch (error) {
             console.error('Error fetching certification detail:', error);
-            alert('Could not start quiz. Please try again.');
+            alert('Could not fetch certification settings. Please try again.');
         }
     };
 
-    // --- Render Dashboard ---
+    // --- Render Dashboard (Exams under selected provider) ---
     const renderDashboard = () => {
-        // Clean out anything (except loader)
-        const loader = document.getElementById('dashboard-loading');
         certificationsGrid.innerHTML = '';
-        if (loader) certificationsGrid.appendChild(loader);
+        headerBreadcrumbs.textContent = providers[currentProvider] ? providers[currentProvider].name : 'Dashboard';
 
-        if (certifications.length === 0) {
-            certificationsGrid.innerHTML += '<p style="text-align: center; grid-column: 1/-1;">No certifications available.</p>';
+        const filtered = certifications.filter(c => c.provider === currentProvider);
+
+        if (filtered.length === 0) {
+            certificationsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No certifications available under this provider yet.</p>';
             return;
         }
 
-        // LEVEL 1: Choose Provider
-        if (currentProvider === null) {
-            dashboardTitle.textContent = 'Choose Your Provider';
-            dashboardSubtitle.textContent = 'Select a cloud or tooling platform to view available certification preparation exams.';
+        dashboardTitle.textContent = `${providers[currentProvider].name} Certifications`;
+        dashboardSubtitle.textContent = `Select an exam category to configure your practice or exam simulation session.`;
 
-            Object.keys(providers).forEach(providerId => {
-                const provider = providers[providerId];
-                // Count available exams for this provider
-                const count = certifications.filter(c => c.provider === providerId).length;
-
-                const card = document.createElement('div');
-                card.className = 'cert-card';
-                card.innerHTML = `
-                    <div class="cert-icon">${provider.icon}</div>
-                    <h2 class="cert-title">${provider.name}</h2>
-                    <p class="cert-desc">${provider.desc}</p>
-                    <div class="cert-meta">
-                        <span class="cert-q-count">${count} Certification${count === 1 ? '' : 's'}</span>
-                        <button class="primary-btn view-provider-btn" data-provider="${providerId}" ${count === 0 ? 'disabled' : ''}>View Exams</button>
-                    </div>
-                `;
-
-                card.querySelector('.view-provider-btn').addEventListener('click', () => {
-                    currentProvider = providerId;
-                    renderDashboard();
-                });
-
-                certificationsGrid.appendChild(card);
+        filtered.forEach(cert => {
+            const card = document.createElement('div');
+            card.className = 'cert-card';
+            card.innerHTML = `
+                <div class="cert-icon">${cert.icon || '📄'}</div>
+                <h2 class="cert-title">${cert.name}</h2>
+                <p class="cert-desc">${cert.description}</p>
+                <div class="cert-meta">
+                    <span class="cert-q-count">${cert.questionCount} Questions Available</span>
+                    <button class="primary-btn start-cert-btn" data-id="${cert.id}">Start Session</button>
+                </div>
+            `;
+            
+            card.querySelector('.start-cert-btn').addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                loadCertificationDetail(id);
             });
-        }
-        // LEVEL 2: Choose Exam within Provider
-        else {
-            const providerInfo = providers[currentProvider];
-            dashboardTitle.textContent = `${providerInfo.name} Exams`;
-            dashboardSubtitle.textContent = `Select an exam to begin practicing.`;
 
-            // Back button
-            const backBtn = document.createElement('button');
-            backBtn.className = 'text-btn flex-btn';
-            backBtn.style.gridColumn = '1 / -1';
-            backBtn.style.marginBottom = '20px';
-            backBtn.innerHTML = `<span class="btn-arrow">&larr;</span> Back to Providers`;
-            backBtn.addEventListener('click', () => {
-                currentProvider = null;
-                renderDashboard();
-            });
-            certificationsGrid.appendChild(backBtn);
+            certificationsGrid.appendChild(card);
+        });
+    };
 
-            const filtered = certifications.filter(c => c.provider === currentProvider);
+    // --- Show Study Config Screen ---
+    const showQuizConfigScreen = () => {
+        if (!currentCert) return;
 
-            if (filtered.length === 0) {
-                const emptyMsg = document.createElement('p');
-                emptyMsg.style.textAlign = 'center';
-                emptyMsg.style.gridColumn = '1 / -1';
-                emptyMsg.textContent = 'No exams available under this category yet.';
-                certificationsGrid.appendChild(emptyMsg);
-                return;
+        headerBreadcrumbs.textContent = `${providers[currentProvider].name} / ${currentCert.name}`;
+        configExamTitle.textContent = `${currentCert.name} - Setup`;
+        configExamDesc.textContent = `Choose your study mode and difficulty. Total questions in database: ${currentCert.questions.length}.`;
+
+        // Update radio selected indicators
+        const radioCards = quizConfigForm.querySelectorAll('.radio-card');
+        radioCards.forEach(card => {
+            const input = card.querySelector('input');
+            
+            // Set initial selected styling
+            if (input.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
             }
 
-            filtered.forEach(cert => {
-                const card = document.createElement('div');
-                card.className = 'cert-card';
-                card.innerHTML = `
-                    <div class="cert-icon">${cert.icon || '📄'}</div>
-                    <h2 class="cert-title">${cert.name}</h2>
-                    <p class="cert-desc">${cert.description}</p>
-                    <div class="cert-meta">
-                        <span class="cert-q-count">${cert.questionCount} Questions</span>
-                        <button class="primary-btn start-cert-btn" data-id="${cert.id}">Start Practice</button>
-                    </div>
-                `;
-
-                card.querySelector('.start-cert-btn').addEventListener('click', (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    loadCertificationDetail(id);
-                });
-
-                certificationsGrid.appendChild(card);
+            // Click listener
+            card.addEventListener('click', () => {
+                const groupName = input.name;
+                const siblings = quizConfigForm.querySelectorAll(`.radio-card:has(input[name="${groupName}"])`);
+                siblings.forEach(s => s.classList.remove('selected'));
+                card.classList.add('selected');
+                input.checked = true;
             });
-        }
+        });
+
+        switchView('quiz-config');
     };
 
-    // --- Quiz Practice Loop ---
-    const startQuiz = () => {
-        currentQuestionIndex = 0;
-        score = 0;
+    configBackBtn.addEventListener('click', () => {
+        switchView('dashboard');
+        renderDashboard();
+    });
+
+    // --- Launch Session ---
+    quizConfigForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!currentCert) return;
+
+        const formData = new FormData(quizConfigForm);
+        const difficulty = formData.get('difficulty'); // 'all', 'easy', 'medium', 'hard'
+        const mode = formData.get('mode'); // 'practice', 'exam'
+
+        // Filter questions by difficulty
+        let pool = [];
+        if (difficulty === 'all') {
+            pool = [...currentCert.questions];
+        } else {
+            pool = currentCert.questions.filter(q => q.difficulty === difficulty);
+        }
+
+        if (pool.length === 0) {
+            alert(`No questions found matching the "${difficulty.toUpperCase()}" difficulty level. Please choose another configuration.`);
+            return;
+        }
+
+        // Initialize session parameters
+        activeSession = {
+            mode: mode,
+            difficulty: difficulty,
+            questions: pool,
+            currentQuestionIndex: 0,
+            answers: new Array(pool.length).fill(null),
+            flagged: new Array(pool.length).fill(false),
+            score: 0,
+            timeRemaining: 20 * 60, // 20 minutes default for Exam mode
+            timerInterval: null,
+            timeElapsed: 0
+        };
+
+        // If Exam Simulation, Shuffe & Limit to 20 questions
+        if (mode === 'exam') {
+            activeSession.questions = shuffleArray(activeSession.questions).slice(0, 20);
+            // Re-allocate arrays based on slice
+            activeSession.answers = new Array(activeSession.questions.length).fill(null);
+            activeSession.flagged = new Array(activeSession.questions.length).fill(false);
+            
+            // Start simulation timer
+            startTimer();
+        }
+
+        // Configure UI Mode displays
+        if (mode === 'exam') {
+            quizSidebarPanel.classList.remove('hidden');
+            flagContainer.classList.remove('hidden');
+            prevQuestionBtn.classList.remove('hidden');
+            submitAnswerBtn.classList.add('hidden'); // No direct submit button per question
+            nextQuestionBtn.classList.remove('hidden'); // Navigate freely
+            
+            // Build navigation grid
+            buildQuestionNavigationGrid();
+        } else {
+            quizSidebarPanel.classList.add('hidden');
+            flagContainer.classList.add('hidden');
+            prevQuestionBtn.classList.add('hidden');
+            submitAnswerBtn.classList.remove('hidden');
+            nextQuestionBtn.classList.add('hidden');
+        }
+
         switchView('quiz');
         showQuestion();
+    });
+
+    // Shuffler
+    const shuffleArray = (array) => {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(randomSeed() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
     };
 
+    // Deterministic random seed fallback
+    let seed = 42;
+    const randomSeed = () => {
+        let x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+    };
+
+    // --- Timer (Simulation Mode) ---
+    const startTimer = () => {
+        if (!activeSession) return;
+        
+        timerDisplayCard.classList.remove('low-time');
+        updateTimerDisplay();
+
+        activeSession.timerInterval = setInterval(() => {
+            if (!activeSession) return;
+
+            activeSession.timeRemaining--;
+            activeSession.timeElapsed++;
+            
+            updateTimerDisplay();
+
+            if (activeSession.timeRemaining <= 120) { // Under 2 mins left
+                timerDisplayCard.classList.add('low-time');
+            }
+
+            if (activeSession.timeRemaining <= 0) {
+                clearInterval(activeSession.timerInterval);
+                alert("Exam Time Expired! Your exam will be automatically submitted.");
+                submitExam();
+            }
+        }, 1000);
+    };
+
+    const updateTimerDisplay = () => {
+        if (!activeSession) return;
+        const mins = Math.floor(activeSession.timeRemaining / 60);
+        const secs = activeSession.timeRemaining % 60;
+        quizTimer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        headerStatusArea.innerHTML = `<span class="timer-badge" style="color: var(--accent-primary); font-weight: 700;">⏱️ ${quizTimer.textContent}</span>`;
+    };
+
+    // --- Build Question Navigation Grid (Simulation Mode) ---
+    const buildQuestionNavigationGrid = () => {
+        if (!activeSession) return;
+
+        questionGridNav.innerHTML = '';
+        activeSession.questions.forEach((_, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'grid-nav-btn';
+            btn.textContent = (idx + 1).toString();
+            btn.setAttribute('data-index', idx);
+
+            btn.addEventListener('click', () => {
+                saveSelectedAnswerInState(); // Save current work
+                activeSession.currentQuestionIndex = idx;
+                showQuestion();
+            });
+
+            questionGridNav.appendChild(btn);
+        });
+        updateQuestionNavigationGridState();
+    };
+
+    const updateQuestionNavigationGridState = () => {
+        if (!activeSession || activeSession.mode !== 'exam') return;
+
+        const buttons = questionGridNav.querySelectorAll('.grid-nav-btn');
+        buttons.forEach((btn, idx) => {
+            // Reset state classes
+            btn.className = 'grid-nav-btn';
+
+            // Highlight current
+            if (idx === activeSession.currentQuestionIndex) {
+                btn.classList.add('current');
+            }
+
+            // Flagged
+            if (activeSession.flagged[idx]) {
+                btn.classList.add('flagged');
+            }
+
+            // Answered
+            if (activeSession.answers[idx] !== null) {
+                btn.classList.add('answered');
+            }
+        });
+    };
+
+    // --- Render Question ---
     const showQuestion = () => {
-        if (!currentCert || !currentCert.questions || currentCert.questions.length === 0) return;
+        if (!activeSession) return;
+
+        const idx = activeSession.currentQuestionIndex;
+        const question = activeSession.questions[idx];
+        const total = activeSession.questions.length;
+
+        // Header context
+        quizDifficultyBadge.className = `badge ${question.difficulty}`;
+        quizDifficultyBadge.textContent = question.difficulty;
+        quizProgressText.textContent = `Question ${idx + 1} of ${total}`;
         
-        selectedOptionIndex = null;
-        submitAnswerBtn.disabled = true;
-        submitAnswerBtn.classList.remove('hidden');
-        nextQuestionBtn.classList.add('hidden');
-        feedbackCard.classList.add('hidden');
-        
-        const question = currentCert.questions[currentQuestionIndex];
-        
-        // Progress display
-        const total = currentCert.questions.length;
-        quizProgressText.textContent = `Question ${currentQuestionIndex + 1} of ${total}`;
-        const pct = ((currentQuestionIndex) / total) * 100;
+        // Progress Bar
+        const pct = (idx / total) * 100;
         quizProgressBar.style.width = `${pct}%`;
 
-        // Render question text
+        // Question text
         questionText.textContent = question.question;
+
+        // Clear feedback card
+        feedbackCard.classList.add('hidden');
+
+        // Flag checkbox configuration (Simulation mode)
+        if (activeSession.mode === 'exam') {
+            flagCheckbox.checked = activeSession.flagged[idx];
+        }
 
         // Render options list
         optionsContainer.innerHTML = '';
-        question.options.forEach((optionText, idx) => {
-            const letter = String.fromCharCode(65 + idx); // A, B, C, D...
-            const optionLabel = document.createElement('div');
-            optionLabel.className = 'option-label';
-            optionLabel.setAttribute('data-index', idx);
-            optionLabel.innerHTML = `
-                <input type="radio" name="quiz-option" id="opt-${idx}" value="${idx}" class="option-radio">
+        question.options.forEach((optionText, optIdx) => {
+            const letter = String.fromCharCode(65 + optIdx);
+            const label = document.createElement('label');
+            label.className = 'option-label';
+            label.setAttribute('data-index', optIdx);
+            label.innerHTML = `
+                <input type="radio" name="quiz-option" id="opt-${optIdx}" value="${optIdx}" class="option-radio">
                 <span class="option-letter">${letter}</span>
                 <span class="option-text">${escapeHtml(optionText)}</span>
             `;
 
-            // Event listener for selection
-            optionLabel.addEventListener('click', () => {
-                if (optionLabel.classList.contains('locked')) return;
-                
-                // Remove selected class from siblings
-                const allOptions = optionsContainer.querySelectorAll('.option-label');
-                allOptions.forEach(opt => opt.classList.remove('selected'));
+            // Restore selection if already answered
+            const savedAns = activeSession.answers[idx];
+            if (savedAns === optIdx) {
+                label.classList.add('selected');
+                label.querySelector('input').checked = true;
+            }
 
-                // Set selection
-                optionLabel.classList.add('selected');
-                const radioInput = optionLabel.querySelector('.option-radio');
-                radioInput.checked = true;
-                
-                selectedOptionIndex = idx;
-                submitAnswerBtn.disabled = false;
+            // Click listener
+            label.addEventListener('click', (e) => {
+                if (label.classList.contains('locked')) return;
+
+                // Toggle selects
+                const siblings = optionsContainer.querySelectorAll('.option-label');
+                siblings.forEach(s => s.classList.remove('selected'));
+                label.classList.add('selected');
+                label.querySelector('input').checked = true;
+
+                if (activeSession.mode === 'practice') {
+                    submitAnswerBtn.disabled = false;
+                } else {
+                    // Simulation Mode: save immediately
+                    activeSession.answers[idx] = optIdx;
+                    updateQuestionNavigationGridState();
+                }
             });
 
-            optionsContainer.appendChild(optionLabel);
+            optionsContainer.appendChild(label);
         });
+
+        // Toggle action buttons layout
+        if (activeSession.mode === 'practice') {
+            const answered = activeSession.answers[idx] !== null;
+            if (answered) {
+                // Lock option buttons and reveal feedback
+                lockPracticeQuestionAndReveal(idx);
+            } else {
+                submitAnswerBtn.disabled = true;
+                submitAnswerBtn.classList.remove('hidden');
+                nextQuestionBtn.classList.add('hidden');
+            }
+        } else {
+            // Simulation Mode: Previous & Next navigation controls
+            prevQuestionBtn.disabled = idx === 0;
+            
+            if (idx === total - 1) {
+                nextQuestionBtn.textContent = 'Finish';
+                nextQuestionBtn.disabled = true; // Disable Next, user must click submit exam
+            } else {
+                nextQuestionBtn.textContent = 'Next ➔';
+                nextQuestionBtn.disabled = false;
+            }
+        }
     };
 
-    const submitAnswer = (e) => {
+    // Save answer when navigating away (helper)
+    const saveSelectedAnswerInState = () => {
+        if (!activeSession) return;
+        const selected = optionsContainer.querySelector('.option-label.selected');
+        const idx = activeSession.currentQuestionIndex;
+        if (selected) {
+            activeSession.answers[idx] = parseInt(selected.getAttribute('data-index'));
+        }
+    };
+
+    // --- Practice Mode Submit Answer ---
+    quizForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        if (selectedOptionIndex === null || !currentCert) return;
+        if (!activeSession || activeSession.mode !== 'practice') return;
 
-        const question = currentCert.questions[currentQuestionIndex];
-        const isCorrect = selectedOptionIndex === question.correctAnswerIndex;
-        
-        if (isCorrect) score++;
+        const idx = activeSession.currentQuestionIndex;
+        const selected = optionsContainer.querySelector('.option-label.selected');
+        if (!selected) return;
 
-        // Lock options & color code
-        const allOptionLabels = optionsContainer.querySelectorAll('.option-label');
-        allOptionLabels.forEach((label, idx) => {
+        const optIdx = parseInt(selected.getAttribute('data-index'));
+        activeSession.answers[idx] = optIdx; // Save choice
+
+        lockPracticeQuestionAndReveal(idx);
+    });
+
+    const lockPracticeQuestionAndReveal = (idx) => {
+        const question = activeSession.questions[idx];
+        const userAns = activeSession.answers[idx];
+        const isCorrect = userAns === question.correctAnswerIndex;
+
+        // Lock select controls
+        const optionLabels = optionsContainer.querySelectorAll('.option-label');
+        optionLabels.forEach((label, oIdx) => {
             label.classList.add('locked');
-            if (idx === question.correctAnswerIndex) {
+            if (oIdx === question.correctAnswerIndex) {
                 label.classList.add('correct');
-            } else if (idx === selectedOptionIndex) {
+            } else if (oIdx === userAns) {
                 label.classList.add('incorrect');
             }
         });
 
-        // Feedback card display
+        // Feedback layout
         feedbackCard.className = 'feedback-card ' + (isCorrect ? 'correct-style' : 'incorrect-style');
         feedbackStatusIcon.textContent = isCorrect ? '✓' : '✗';
         feedbackStatusTitle.textContent = isCorrect ? 'Correct!' : 'Incorrect';
         explanationText.textContent = question.explanation;
         feedbackCard.classList.remove('hidden');
 
-        // Toggle action buttons
+        // Toggle buttons
         submitAnswerBtn.classList.add('hidden');
         nextQuestionBtn.classList.remove('hidden');
 
-        // Scroll down slightly so explanation is in view
+        // Scroll explanation into view
         setTimeout(() => {
             feedbackCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);
     };
 
-    const handleNextQuestion = () => {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < currentCert.questions.length) {
-            showQuestion();
-        } else {
-            // Quiz finished - update progress bar to full first
-            quizProgressBar.style.width = '100%';
-            setTimeout(() => {
+    // --- Navigation click listeners ---
+    prevQuestionBtn.addEventListener('click', () => {
+        if (!activeSession) return;
+        saveSelectedAnswerInState();
+        activeSession.currentQuestionIndex--;
+        showQuestion();
+        updateQuestionNavigationGridState();
+    });
+
+    nextQuestionBtn.addEventListener('click', () => {
+        if (!activeSession) return;
+
+        if (activeSession.mode === 'practice') {
+            const idx = activeSession.currentQuestionIndex;
+            if (idx === activeSession.questions.length - 1) {
                 showScorecard();
-            }, 300);
+            } else {
+                activeSession.currentQuestionIndex++;
+                showQuestion();
+            }
+        } else {
+            // Simulation Mode
+            saveSelectedAnswerInState();
+            activeSession.currentQuestionIndex++;
+            showQuestion();
+            updateQuestionNavigationGridState();
         }
+    });
+
+    // Flag checkbox listener
+    flagCheckbox.addEventListener('change', () => {
+        if (!activeSession || activeSession.mode !== 'exam') return;
+        const idx = activeSession.currentQuestionIndex;
+        activeSession.flagged[idx] = flagCheckbox.checked;
+        updateQuestionNavigationGridState();
+    });
+
+    // --- Submit Entire Exam (Simulation mode) ---
+    submitExamBtn.addEventListener('click', () => {
+        if (!activeSession) return;
+
+        // Check for unanswered questions
+        const unansweredCount = activeSession.answers.filter(ans => ans === null).length;
+        let warningText = 'Are you sure you want to submit your exam?';
+        if (unansweredCount > 0) {
+            warningText = `You have ${unansweredCount} unanswered question(s). Are you sure you want to submit your exam now?`;
+        }
+
+        if (confirm(warningText)) {
+            submitExam();
+        }
+    });
+
+    const submitExam = () => {
+        if (!activeSession) return;
+
+        // Stop timer
+        if (activeSession.timerInterval) {
+            clearInterval(activeSession.timerInterval);
+        }
+
+        // Calculate score
+        let correctCount = 0;
+        activeSession.questions.forEach((q, idx) => {
+            if (activeSession.answers[idx] === q.correctAnswerIndex) {
+                correctCount++;
+            }
+        });
+        activeSession.score = correctCount;
+
+        showScorecard();
     };
 
     // --- Scorecard Render ---
     const showScorecard = () => {
-        if (!currentCert) return;
+        if (!activeSession || !currentCert) return;
 
         scorecardCertName.textContent = currentCert.name;
         
-        const total = currentCert.questions.length;
-        const scorePct = Math.round((score / total) * 100);
+        const total = activeSession.questions.length;
         
+        // Calculate score
+        let correctCount = 0;
+        activeSession.questions.forEach((q, idx) => {
+            if (activeSession.answers[idx] === q.correctAnswerIndex) {
+                correctCount++;
+            }
+        });
+        
+        const scorePct = Math.round((correctCount / total) * 100);
         scorePercentage.textContent = `${scorePct}%`;
-        scoreFraction.textContent = `${score} / ${total}`;
+        scoreFraction.textContent = `${correctCount} / ${total}`;
 
         const scoreCircle = document.querySelector('.score-circle');
         scoreCircle.className = 'score-circle'; // Reset classes
@@ -363,16 +737,102 @@ document.addEventListener('DOMContentLoaded', () => {
             scorecardBadge.textContent = '🎉';
             scoreCircle.classList.add('pass');
             resultStatusTitle.textContent = 'Congratulations, you passed!';
-            resultStatusMessage.textContent = `Excellent job! You answered ${score} out of ${total} questions correctly (${scorePct}%) and met the benchmark logic for certification readiness.`;
+            resultStatusMessage.textContent = `Excellent job! You answered ${correctCount} out of ${total} questions correctly (${scorePct}%) and met the benchmark logic for certification readiness.`;
         } else {
             scorecardBadge.textContent = '📚';
             scoreCircle.classList.add('fail');
             resultStatusTitle.textContent = 'Keep practicing!';
-            resultStatusMessage.textContent = `You scored ${score} out of ${total} (${scorePct}%). We recommend reviewing the detailed explanations and retrying until you achieve at least 70%.`;
+            resultStatusMessage.textContent = `You scored ${correctCount} out of ${total} (${scorePct}%). We recommend reviewing the detailed explanations below and retrying until you achieve at least 70%.`;
         }
+
+        // Render detailed review accordions
+        renderReviewQuestions();
 
         switchView('scorecard');
     };
+
+    const renderReviewQuestions = () => {
+        if (!activeSession) return;
+
+        reviewQuestionsList.innerHTML = '';
+        activeSession.questions.forEach((question, idx) => {
+            const userAnsIdx = activeSession.answers[idx];
+            const isCorrect = userAnsIdx === question.correctAnswerIndex;
+            const statusText = userAnsIdx === null ? 'Unanswered' : (isCorrect ? 'Correct' : 'Incorrect');
+            const statusClass = userAnsIdx === null ? 'incorrect' : (isCorrect ? 'correct' : 'incorrect'); // treating unanswered as incorrect style
+
+            const item = document.createElement('div');
+            item.className = 'review-item';
+            item.innerHTML = `
+                <div class="review-header-toggle">
+                    <span class="review-q-summary">
+                        <span class="review-badge ${statusClass}">${statusText}</span>
+                        <span>Q${idx + 1}: ${escapeHtml(question.question)}</span>
+                    </span>
+                    <span class="toggle-arrow">▼</span>
+                </div>
+                <div class="review-body">
+                    <p class="review-q-text">${escapeHtml(question.question)}</p>
+                    <div class="options-list">
+                        <!-- Filled dynamically below -->
+                    </div>
+                    <div class="feedback-card ${isCorrect ? 'correct-style' : 'incorrect-style'}">
+                        <div class="explanation-content" style="margin: 0;">
+                            <h4>Explanation</h4>
+                            <p>${escapeHtml(question.explanation)}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Inject option lists with styled highlights
+            const optsContainer = item.querySelector('.options-list');
+            question.options.forEach((optionText, optIdx) => {
+                const letter = String.fromCharCode(65 + optIdx);
+                const optLabel = document.createElement('div');
+                optLabel.className = 'option-label locked';
+                
+                // Styles
+                if (optIdx === question.correctAnswerIndex) {
+                    optLabel.classList.add('correct');
+                } else if (optIdx === userAnsIdx) {
+                    optLabel.classList.add('incorrect');
+                }
+                
+                optLabel.innerHTML = `
+                    <span class="option-letter">${letter}</span>
+                    <span class="option-text">${escapeHtml(optionText)}</span>
+                `;
+                optsContainer.appendChild(optLabel);
+            });
+
+            // Toggle Open/Close accordion
+            item.querySelector('.review-header-toggle').addEventListener('click', () => {
+                item.classList.toggle('open');
+            });
+
+            reviewQuestionsList.appendChild(item);
+        });
+    };
+
+    // --- Action Listeners for exiting/retrying quiz ---
+    quitQuizBtn.addEventListener('click', () => {
+        handleNavigationExit(() => {
+            switchView('dashboard');
+            renderDashboard();
+        });
+    });
+
+    retryQuizBtn.addEventListener('click', () => {
+        cleanupActiveSession();
+        showQuizConfigScreen();
+    });
+
+    returnDashboardBtn.addEventListener('click', () => {
+        cleanupActiveSession();
+        switchView('dashboard');
+        renderDashboard();
+    });
 
     // --- Utility helper ---
     const escapeHtml = (text) => {
@@ -385,43 +845,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return text.replace(/[&<>"']/g, function(m) { return map[m]; });
     };
-
-    // --- Action Listeners ---
-    quizForm.addEventListener('submit', submitAnswer);
-    nextQuestionBtn.addEventListener('click', handleNextQuestion);
-
-    backToDashboardBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to quit the current practice quiz session? Progress will be lost.')) {
-            currentProvider = null; // Reset back to provider selection
-            renderDashboard();
-            switchView('dashboard');
-        }
-    });
-
-    retryQuizBtn.addEventListener('click', () => {
-        startQuiz();
-    });
-
-    returnDashboardBtn.addEventListener('click', () => {
-        currentProvider = null; // Reset back to provider selection
-        renderDashboard();
-        switchView('dashboard');
-    });
-
-    headerLogoBtn.addEventListener('click', () => {
-        // If in middle of a quiz, ask first
-        if (quizView.classList.contains('active')) {
-            if (confirm('Are you sure you want to return to dashboard? Current progress will be lost.')) {
-                currentProvider = null;
-                renderDashboard();
-                switchView('dashboard');
-            }
-        } else {
-            currentProvider = null;
-            renderDashboard();
-            switchView('dashboard');
-        }
-    });
 
     // --- Init App ---
     initTheme();

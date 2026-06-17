@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CertPrep - Modular Certification Preparation</title>
-    <meta name="description" content="A modular, fast, and elegant preparation web application for Google Cloud, AWS, and other professional certifications.">
+    <title>CertPrep - Professional Certification Preparation</title>
+    <meta name="description" content="A modular, fast, and elegant preparation web application for professional cloud and tooling certifications.">
     <!-- Google Fonts Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,116 +15,254 @@
     <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
 </head>
 <body>
-    <!-- App Container -->
-    <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-logo" id="header-logo-btn">
-                <span class="logo-icon">🎓</span>
-                <span class="logo-text">Cert<span class="highlight">Prep</span></span>
+    <div class="app-layout">
+        <!-- Persistent Sidebar Menu (Left panel on Desktop, slide-drawer on Mobile) -->
+        <aside class="app-sidebar" id="app-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand" id="sidebar-logo-btn">
+                    <span class="logo-icon">🎓</span>
+                    <span class="logo-text">Cert<span class="highlight">Prep</span></span>
+                </div>
+                <!-- Mobile Close Btn -->
+                <button id="sidebar-close-btn" class="icon-btn mobile-only" aria-label="Close Sidebar">&times;</button>
             </div>
-            <div class="header-actions">
+            
+            <nav class="sidebar-nav">
+                <span class="nav-section-title">Providers</span>
+                <div class="nav-list" id="sidebar-providers-list">
+                    <!-- Providers populated dynamically -->
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
                 <button id="theme-toggle-btn" class="icon-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Light/Dark Theme">
                     <span class="theme-icon">🌙</span>
                 </button>
             </div>
-        </header>
+        </aside>
 
-        <!-- Main Workspace -->
-        <main class="app-main">
-            <!-- View 1: Dashboard -->
-            <section id="dashboard-view" class="view-section active">
-                <div class="view-header">
-                    <h1>Choose Your Certification</h1>
-                    <p class="subtitle">Select a certification exam to start a practice quiz session with instant explanations.</p>
+        <!-- Main Content Wrapper -->
+        <div class="app-content-wrapper">
+            <!-- Header (Contains mobile menu toggle and page context) -->
+            <header class="app-header">
+                <div class="mobile-header-left">
+                    <button id="mobile-menu-toggle" class="icon-btn mobile-only" aria-label="Open Menu">☰</button>
+                    <div class="header-breadcrumbs" id="header-breadcrumbs">Google Cloud / Associate Cloud Engineer</div>
                 </div>
-                <!-- Dynamic grid of certifications -->
-                <div id="certifications-grid" class="certs-grid">
-                    <div class="loading-spinner" id="dashboard-loading">
-                        <div class="spinner"></div>
-                        <p>Loading certifications...</p>
+                <div class="header-status" id="header-status-area">
+                    <!-- Dynamic details like active mode/timer -->
+                </div>
+            </header>
+
+            <!-- Main Panel -->
+            <main class="app-main">
+                
+                <!-- View 1: Dashboard (Exams List under selected Provider) -->
+                <section id="dashboard-view" class="view-section active">
+                    <div class="view-header">
+                        <h1 id="dashboard-title">Choose Your Certification</h1>
+                        <p class="subtitle" id="dashboard-subtitle">Select an exam category to start practicing with detailed feedback.</p>
                     </div>
-                </div>
-            </section>
-
-            <!-- View 2: Quiz Practice Mode -->
-            <section id="quiz-view" class="view-section">
-                <!-- Quiz Header -->
-                <div class="quiz-header">
-                    <button id="back-to-dashboard-btn" class="text-btn flex-btn">
-                        <span class="btn-arrow">&larr;</span> Dashboard
-                    </button>
-                    <span id="quiz-progress-text" class="quiz-progress-text">Question 1 of 5</span>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="progress-bar-container">
-                    <div id="quiz-progress-bar" class="progress-bar" style="width: 0%;"></div>
-                </div>
-
-                <!-- Question Card -->
-                <div class="question-card">
-                    <h2 id="question-text" class="question-title">Loading question...</h2>
-                    
-                    <form id="quiz-form" class="options-form">
-                        <div id="options-container" class="options-list">
-                            <!-- Options injected dynamically -->
-                        </div>
-                        
-                        <div class="action-bar">
-                            <button type="submit" id="submit-answer-btn" class="primary-btn" disabled>Submit Answer</button>
-                            <button type="button" id="next-question-btn" class="primary-btn secondary-style hidden">Next Question &rarr;</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Feedback & Explanation Card -->
-                <div id="feedback-card" class="feedback-card hidden">
-                    <div class="feedback-status-header">
-                        <span id="feedback-status-icon" class="status-icon">✓</span>
-                        <h3 id="feedback-status-title" class="status-title">Correct!</h3>
-                    </div>
-                    <div class="explanation-content">
-                        <h4>Explanation</h4>
-                        <p id="explanation-text">Explanation goes here.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- View 3: Scorecard Summary -->
-            <section id="scorecard-view" class="view-section">
-                <div class="scorecard-card">
-                    <div class="scorecard-icon" id="scorecard-badge">🎉</div>
-                    <h1 class="scorecard-title">Quiz Completed!</h1>
-                    <p id="scorecard-cert-name" class="scorecard-cert-name">Google Associate Cloud Engineer</p>
-
-                    <!-- Score Circle -->
-                    <div class="score-display">
-                        <div class="score-circle">
-                            <span id="score-percentage" class="score-number">80%</span>
-                            <span id="score-fraction" class="score-subtext">4 / 5</span>
+                    <!-- Dynamic grid of certifications -->
+                    <div id="certifications-grid" class="certs-grid">
+                        <div class="loading-spinner" id="dashboard-loading">
+                            <div class="spinner"></div>
+                            <p>Loading certifications...</p>
                         </div>
                     </div>
+                </section>
 
-                    <!-- Status Message -->
-                    <div class="result-evaluation" id="result-evaluation-card">
-                        <h3 id="result-status-title">Congratulations, you passed!</h3>
-                        <p id="result-status-message">Great job! You have demonstrated solid readiness for this exam category.</p>
+                <!-- View 2: Exam Configuration Screen -->
+                <section id="quiz-config-view" class="view-section">
+                    <div class="config-card">
+                        <button id="config-back-btn" class="text-btn flex-btn">&larr; Back to Exams</button>
+                        <h2 id="config-exam-title" class="config-title">Exam Settings</h2>
+                        <p id="config-exam-desc" class="config-subtitle">Configure your study or testing session parameters.</p>
+
+                        <form id="quiz-config-form" class="config-form">
+                            <!-- Difficulty Options -->
+                            <div class="form-group">
+                                <label class="group-label">Difficulty Level</label>
+                                <div class="radio-card-grid">
+                                    <label class="radio-card selected">
+                                        <input type="radio" name="difficulty" value="all" checked>
+                                        <span class="radio-title">All Levels</span>
+                                        <span class="radio-desc">Complete set of questions (Mixed difficulty)</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="difficulty" value="easy">
+                                        <span class="radio-title">Easy</span>
+                                        <span class="radio-desc">Foundational terms and basic conceptual knowledge</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="difficulty" value="medium">
+                                        <span class="radio-title">Medium</span>
+                                        <span class="radio-desc">Practical cloud scenarios and configuration questions</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="difficulty" value="hard">
+                                        <span class="radio-title">Hard</span>
+                                        <span class="radio-desc">Complex troubleshooting and architectural scenarios</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Mode Options -->
+                            <div class="form-group">
+                                <label class="group-label">Practice Mode vs. Exam Simulation</label>
+                                <div class="radio-card-grid two-cols">
+                                    <label class="radio-card selected">
+                                        <input type="radio" name="mode" value="practice" checked>
+                                        <span class="radio-title">Practice Mode</span>
+                                        <span class="radio-desc">Untimed session with instant correct/incorrect explanations after every submission.</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="mode" value="exam">
+                                        <span class="radio-title">Exam Simulation</span>
+                                        <span class="radio-desc">Timed session (20 questions / 20 mins) with a question navigation grid. Results shown at the end.</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="start-session-btn" class="primary-btn wide-btn">Start Practice Session</button>
+                        </form>
                     </div>
+                </section>
 
-                    <!-- Actions -->
-                    <div class="scorecard-actions">
-                        <button id="retry-quiz-btn" class="primary-btn">Retry Quiz</button>
-                        <button id="return-dashboard-btn" class="primary-btn secondary-style">Back to Dashboard</button>
+                <!-- View 3: Active Quiz Practice & Simulation Screen -->
+                <section id="quiz-view" class="view-section">
+                    <div class="quiz-layout">
+                        <!-- Left Panel: Active Question -->
+                        <div class="quiz-main-panel">
+                            <!-- Quiz Header details -->
+                            <div class="quiz-header">
+                                <button id="quit-quiz-btn" class="text-btn flex-btn">
+                                    <span class="btn-arrow">&larr;</span> Quit Session
+                                </button>
+                                <div class="quiz-info-row">
+                                    <span id="quiz-difficulty-badge" class="badge">Medium</span>
+                                    <span id="quiz-progress-text" class="quiz-progress-text">Question 1 of 20</span>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="progress-bar-container">
+                                <div id="quiz-progress-bar" class="progress-bar" style="width: 0%;"></div>
+                            </div>
+
+                            <!-- Question Card -->
+                            <div class="question-card">
+                                <h2 id="question-text" class="question-title">Loading question...</h2>
+                                
+                                <form id="quiz-form" class="options-form">
+                                    <div id="options-container" class="options-list">
+                                        <!-- Options injected dynamically -->
+                                    </div>
+                                    
+                                    <div class="action-bar">
+                                        <div class="left-actions">
+                                            <!-- Flag Checkbox for Exam Simulation -->
+                                            <label id="flag-container" class="flag-label hidden">
+                                                <input type="checkbox" id="flag-checkbox">
+                                                <span class="flag-custom"></span> Flag for Review
+                                            </label>
+                                        </div>
+                                        <div class="right-actions">
+                                            <button type="button" id="prev-question-btn" class="primary-btn secondary-style hidden">&larr; Prev</button>
+                                            <button type="submit" id="submit-answer-btn" class="primary-btn" disabled>Submit Answer</button>
+                                            <button type="button" id="next-question-btn" class="primary-btn secondary-style hidden">Next &rarr;</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Feedback & Explanation Card (Practice Mode only) -->
+                            <div id="feedback-card" class="feedback-card hidden">
+                                <div class="feedback-status-header">
+                                    <span id="feedback-status-icon" class="status-icon">✓</span>
+                                    <h3 id="feedback-status-title" class="status-title">Correct!</h3>
+                                </div>
+                                <div class="explanation-content">
+                                    <h4>Explanation</h4>
+                                    <p id="explanation-text">Explanation goes here.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Question Navigator & Timer (Exam Simulation only) -->
+                        <div class="quiz-sidebar-panel hidden" id="quiz-sidebar-panel">
+                            <div class="sidebar-panel-card">
+                                <div class="timer-display" id="timer-display-card">
+                                    <span class="timer-icon">⏳</span>
+                                    <span id="quiz-timer" class="timer-text">20:00</span>
+                                </div>
+                                
+                                <h3 class="panel-section-title">Question Grid</h3>
+                                <div class="question-grid-nav" id="question-grid-nav">
+                                    <!-- Circles injected dynamically e.g. 1 to 20 -->
+                                </div>
+                                
+                                <div class="grid-legend">
+                                    <div class="legend-item"><span class="legend-dot current"></span> Current</div>
+                                    <div class="legend-item"><span class="legend-dot answered"></span> Answered</div>
+                                    <div class="legend-item"><span class="legend-dot flagged"></span> Flagged</div>
+                                    <div class="legend-item"><span class="legend-dot empty"></span> Unanswered</div>
+                                </div>
+
+                                <button id="submit-exam-btn" class="primary-btn wide-btn error-action-style">Submit Entire Exam</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </section>
-        </main>
+                </section>
 
-        <!-- Footer -->
-        <footer class="app-footer">
-            <p>&copy; 2026 CertPrep. Built for Cloud Professionals.</p>
-        </footer>
+                <!-- View 4: Scorecard Summary & detailed reviews -->
+                <section id="scorecard-view" class="view-section">
+                    <div class="scorecard-container">
+                        <!-- Score overview card -->
+                        <div class="scorecard-card">
+                            <div class="scorecard-icon" id="scorecard-badge">🎉</div>
+                            <h1 class="scorecard-title">Session Completed!</h1>
+                            <p id="scorecard-cert-name" class="scorecard-cert-name">Google Associate Cloud Engineer</p>
+
+                            <!-- Score Circle -->
+                            <div class="score-display">
+                                <div class="score-circle">
+                                    <span id="score-percentage" class="score-number">80%</span>
+                                    <span id="score-fraction" class="score-subtext">4 / 5</span>
+                                </div>
+                            </div>
+
+                            <!-- Status Message -->
+                            <div class="result-evaluation" id="result-evaluation-card">
+                                <h3 id="result-status-title">Congratulations, you passed!</h3>
+                                <p id="result-status-message">Great job! You have demonstrated solid readiness for this exam category.</p>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="scorecard-actions">
+                                <button id="retry-quiz-btn" class="primary-btn">Retry Session</button>
+                                <button id="return-dashboard-btn" class="primary-btn secondary-style">Back to Exams</button>
+                            </div>
+                        </div>
+
+                        <!-- Question Review Breakdown -->
+                        <div class="review-breakdown-card">
+                            <h2 class="review-title">Detailed Question Review</h2>
+                            <p class="review-subtitle">Click on any question to review your answer, the correct option, and the in-depth explanation.</p>
+                            
+                            <div class="review-questions-list" id="review-questions-list">
+                                <!-- Dynamic review items injected -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Footer -->
+            <footer class="app-footer">
+                <p>&copy; 2026 CertPrep. Built for Cloud Professionals.</p>
+            </footer>
+        </div>
     </div>
 </body>
 </html>

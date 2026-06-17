@@ -1,21 +1,22 @@
 # CertPrep - Professional Certification Prep App
 
-CertPrep is a fast, elegant, and modular web application designed to help cloud professionals prepare for certification exams (e.g., **Google Cloud**, **AWS**, **dbt**, and **Microsoft**). 
+CertPrep is a fast, elegant, and modular web application designed to help cloud professionals prepare for certification exams (supporting **Google Cloud**, **AWS**, **dbt**, and **Microsoft**). 
 
-The app features a premium, responsive sidebar layout, interactive quiz flows, a timed exam simulation mode, difficulty configurations, and an in-depth scorecard review tool.
+The app features a premium glassmorphic layout with persistent sidebar menus, interactive quiz flows, a timed exam simulation mode, custom difficulty tiers, study cheat sheets, and in-depth scorecard reviews.
 
 ---
 
 ## 🎨 Key Features
 
-- **Persistent Sidebar Navigation**: Quickly navigate between top-level providers (**Google Cloud**, **AWS**, **dbt**, and **Microsoft**) using a modern left-side panel (responsive drawer on mobile).
+- **Persistent Sidebar Navigation**: Quickly navigate between top-level providers (**Google Cloud**, **AWS**, **dbt**, and **Microsoft**) using a modern left-side panel (responsive drawer on mobile) featuring SVGs of their actual logos.
 - **Difficulty Tier Selector**: Customise your study session by choosing between **Easy** (foundational concepts), **Medium** (practical scenarios), or **Hard** (architectural troubleshooting) questions.
 - **Dual Study Modes**:
   - **Practice Mode**: An untimed session showing immediate correct/incorrect feedback with comprehensive educational explanations after every question.
   - **Exam Simulation**: A timed, realistic test environment. It shuffles and limits the pool to 20 questions with a 20-minute timer. Features a question navigation grid map and "Flag for Review" tools, saving results for the end.
+- **Study Cheat Sheets**: A dedicated dashboard tab for each provider offering study cheat sheets outlining core concepts, common CLI command structures, and architectural solutions for every single exam.
 - **Interactive Question Navigation Grid**: A visual map displaying answered, current, and flagged questions, allowing users to jump directly to any question during simulations.
 - **Detailed Scorecard Review**: After completion, view your percentage score, a color-coded success badge, and an expandable accordion breakdown of every question to inspect your choices, correct options, and detailed explanations.
-- **High-Quality Question Pool**: Includes at least **50 realistic questions** per certification (250 questions total), tagged by difficulty.
+- **High-Quality Question Pool**: Includes at least **50 realistic questions** per certification (**14 certifications, 700 questions total** in the compiled database), tagged by difficulty.
 - **Theme Customization**: Beautiful glassmorphism theme, with a theme switcher supporting persistent dark-mode and light-mode preferences.
 
 ---
@@ -62,7 +63,7 @@ The app features a premium, responsive sidebar layout, interactive quiz flows, a
    ```
 
 5. **Generate the Question Bank**:
-   Generate the 250-question database by running the python compiler script:
+   Generate the 700-question database by running the python compiler script:
    ```bash
    python3 scripts/populate_questions.py
    ```
@@ -83,7 +84,7 @@ The app features a premium, responsive sidebar layout, interactive quiz flows, a
 certification-prep-app/
 ├── app.py                 # Flask server & backend API endpoints
 ├── data/
-│   └── questions.json     # 250-question database mapped by provider & difficulty
+│   └── questions.json     # 700-question database mapped by provider & difficulty
 ├── scripts/
 │   └── populate_questions.py # Programmatic question bank generator script
 ├── static/
@@ -104,6 +105,6 @@ certification-prep-app/
 To add a new exam provider or certificate:
 1. Append your exam configuration, topic matrices, and questions (divided into `easy`, `medium`, and `hard` profiles) to `scripts/populate_questions.py`.
 2. Re-run `python3 scripts/populate_questions.py` to compile the updated JSON.
-3. Update the `providers` dictionary in `static/js/app.js` to define the provider name, icon, and description.
+3. Update the `providers` dictionary in `static/js/app.js` to define the provider name, icon, and description if adding a new provider.
 
 The client-side dashboard will dynamically load the new categories, count the exams, and render selection buttons automatically.

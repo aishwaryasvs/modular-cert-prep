@@ -1425,6 +1425,720 @@
       ]
     },
     {
+      "id": "google-generative-ai-leader",
+      "provider": "google-cloud",
+      "name": "Google Cloud Generative AI Leader",
+      "description": "Validates foundational knowledge of Generative AI concepts, responsible AI development, and deploying gen AI solutions strategically using Vertex AI, Gemini, and Agent Builder.",
+      "icon": "\ud83e\udd16",
+      "cheatsheet": {
+        "summary": "Focuses on business-level strategy, ethics, foundation models (LLMs), Vertex AI platform solutions, Gemini integration, and responsible AI implementation.",
+        "coreConcepts": [
+          {
+            "name": "Foundation Models & LLMs",
+            "desc": "Large pre-trained neural networks (like Gemini) that can be adapted to various downstream tasks with minimal fine-tuning."
+          },
+          {
+            "name": "Generative AI vs Discriminative AI",
+            "desc": "Generative AI generates new content (text, image, audio), while Discriminative AI classifies or predicts patterns within existing data."
+          },
+          {
+            "name": "Responsible AI & Governance",
+            "desc": "Implementing safety filters, bias mitigation, data governance, and addressing copyright issues under Google Cloud's AI principles."
+          },
+          {
+            "name": "Prompt Engineering & RAG",
+            "desc": "Prompt Engineering optimizes queries to LLMs. Retrieval-Augmented Generation (RAG) grounds LLM outputs using enterprise databases for accuracy."
+          }
+        ],
+        "commands": [
+          {
+            "cmd": "Vertex AI Search & Conversation",
+            "desc": "No-code platform to build enterprise-grade search engines and generative chat agents."
+          },
+          {
+            "cmd": "Gemini for Google Cloud",
+            "desc": "Always-on collaborator helping developers write code, manage resources, and secure cloud environments."
+          }
+        ],
+        "architecturalPatterns": [
+          {
+            "scenario": "Accurate Customer Q&A Agent",
+            "solution": "Use Vertex AI Agent Builder to create a chat agent, connect it to enterprise PDF documentation in Cloud Storage using RAG, and enable safety filters."
+          },
+          {
+            "scenario": "Securing Gen AI Applications",
+            "solution": "Deploy LLMs via Vertex AI API, configure VPC Service Controls to isolate training data, and assign specific IAM roles for API invocation."
+          }
+        ]
+      },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/generative-ai-leader"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
+      "questions": [
+        {
+          "id": "google-generative-ai-leader-q1",
+          "question": "[Responsible AI Scenario 1] In your company's Project A environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q1)"
+        },
+        {
+          "id": "google-generative-ai-leader-q2",
+          "question": "[Vertex AI Offerings Scenario 1] In your company's Project A environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q2)"
+        },
+        {
+          "id": "google-generative-ai-leader-q3",
+          "question": "[Generative AI Concepts Scenario 1] In your company's Project A environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q3)"
+        },
+        {
+          "id": "google-generative-ai-leader-q4",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 1] In your company's Project A environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "easy",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q4)"
+        },
+        {
+          "id": "google-generative-ai-leader-q5",
+          "question": "[Gemini for Google Cloud Scenario 1] In your company's Project A environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "easy",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q5)"
+        },
+        {
+          "id": "google-generative-ai-leader-q6",
+          "question": "[Responsible AI Scenario 2] In your company's Project B environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q6)"
+        },
+        {
+          "id": "google-generative-ai-leader-q7",
+          "question": "[Vertex AI Offerings Scenario 2] In your company's Project B environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q7)"
+        },
+        {
+          "id": "google-generative-ai-leader-q8",
+          "question": "[Generative AI Concepts Scenario 2] In your company's Project B environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q8)"
+        },
+        {
+          "id": "google-generative-ai-leader-q9",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 2] In your company's Project B environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "easy",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q9)"
+        },
+        {
+          "id": "google-generative-ai-leader-q10",
+          "question": "[Gemini for Google Cloud Scenario 2] In your company's Project B environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "easy",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q10)"
+        },
+        {
+          "id": "google-generative-ai-leader-q11",
+          "question": "[Responsible AI Scenario 3] In your company's Project C environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q11)"
+        },
+        {
+          "id": "google-generative-ai-leader-q12",
+          "question": "[Vertex AI Offerings Scenario 3] In your company's Project C environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q12)"
+        },
+        {
+          "id": "google-generative-ai-leader-q13",
+          "question": "[Generative AI Concepts Scenario 3] In your company's Project C environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "easy",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q13)"
+        },
+        {
+          "id": "google-generative-ai-leader-q14",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 3] In your company's Project C environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "easy",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q14)"
+        },
+        {
+          "id": "google-generative-ai-leader-q15",
+          "question": "[Gemini for Google Cloud Scenario 3] In your company's Project C environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "easy",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Easy, Question Ref: google-generative-ai-leader-q15)"
+        },
+        {
+          "id": "google-generative-ai-leader-q16",
+          "question": "[Responsible AI Scenario 4] In your company's Project D environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q16)"
+        },
+        {
+          "id": "google-generative-ai-leader-q17",
+          "question": "[Vertex AI Offerings Scenario 4] In your company's Project D environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q17)"
+        },
+        {
+          "id": "google-generative-ai-leader-q18",
+          "question": "[Generative AI Concepts Scenario 4] In your company's Project D environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q18)"
+        },
+        {
+          "id": "google-generative-ai-leader-q19",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 4] In your company's Project D environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "medium",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q19)"
+        },
+        {
+          "id": "google-generative-ai-leader-q20",
+          "question": "[Gemini for Google Cloud Scenario 4] In your company's Project D environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "medium",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q20)"
+        },
+        {
+          "id": "google-generative-ai-leader-q21",
+          "question": "[Responsible AI Scenario 5] In your company's Project E environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q21)"
+        },
+        {
+          "id": "google-generative-ai-leader-q22",
+          "question": "[Vertex AI Offerings Scenario 5] In your company's Project E environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q22)"
+        },
+        {
+          "id": "google-generative-ai-leader-q23",
+          "question": "[Generative AI Concepts Scenario 5] In your company's Project E environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q23)"
+        },
+        {
+          "id": "google-generative-ai-leader-q24",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 5] In your company's Project E environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "medium",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q24)"
+        },
+        {
+          "id": "google-generative-ai-leader-q25",
+          "question": "[Gemini for Google Cloud Scenario 5] In your company's Project E environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "medium",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q25)"
+        },
+        {
+          "id": "google-generative-ai-leader-q26",
+          "question": "[Responsible AI Scenario 6] In your company's Project F environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q26)"
+        },
+        {
+          "id": "google-generative-ai-leader-q27",
+          "question": "[Vertex AI Offerings Scenario 6] In your company's Project F environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q27)"
+        },
+        {
+          "id": "google-generative-ai-leader-q28",
+          "question": "[Generative AI Concepts Scenario 6] In your company's Project F environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q28)"
+        },
+        {
+          "id": "google-generative-ai-leader-q29",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 6] In your company's Project F environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "medium",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q29)"
+        },
+        {
+          "id": "google-generative-ai-leader-q30",
+          "question": "[Gemini for Google Cloud Scenario 6] In your company's Project F environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "medium",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q30)"
+        },
+        {
+          "id": "google-generative-ai-leader-q31",
+          "question": "[Responsible AI Scenario 7] In your company's Project G environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q31)"
+        },
+        {
+          "id": "google-generative-ai-leader-q32",
+          "question": "[Vertex AI Offerings Scenario 7] In your company's Project G environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q32)"
+        },
+        {
+          "id": "google-generative-ai-leader-q33",
+          "question": "[Generative AI Concepts Scenario 7] In your company's Project G environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "medium",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q33)"
+        },
+        {
+          "id": "google-generative-ai-leader-q34",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 7] In your company's Project G environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "medium",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q34)"
+        },
+        {
+          "id": "google-generative-ai-leader-q35",
+          "question": "[Gemini for Google Cloud Scenario 7] In your company's Project G environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "medium",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Medium, Question Ref: google-generative-ai-leader-q35)"
+        },
+        {
+          "id": "google-generative-ai-leader-q36",
+          "question": "[Responsible AI Scenario 8] In your company's Project H environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q36)"
+        },
+        {
+          "id": "google-generative-ai-leader-q37",
+          "question": "[Vertex AI Offerings Scenario 8] In your company's Project H environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q37)"
+        },
+        {
+          "id": "google-generative-ai-leader-q38",
+          "question": "[Generative AI Concepts Scenario 8] In your company's Project H environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q38)"
+        },
+        {
+          "id": "google-generative-ai-leader-q39",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 8] In your company's Project H environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "hard",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q39)"
+        },
+        {
+          "id": "google-generative-ai-leader-q40",
+          "question": "[Gemini for Google Cloud Scenario 8] In your company's Project H environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "hard",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q40)"
+        },
+        {
+          "id": "google-generative-ai-leader-q41",
+          "question": "[Responsible AI Scenario 9] In your company's Project I environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q41)"
+        },
+        {
+          "id": "google-generative-ai-leader-q42",
+          "question": "[Vertex AI Offerings Scenario 9] In your company's Project I environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q42)"
+        },
+        {
+          "id": "google-generative-ai-leader-q43",
+          "question": "[Generative AI Concepts Scenario 9] In your company's Project I environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q43)"
+        },
+        {
+          "id": "google-generative-ai-leader-q44",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 9] In your company's Project I environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "hard",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q44)"
+        },
+        {
+          "id": "google-generative-ai-leader-q45",
+          "question": "[Gemini for Google Cloud Scenario 9] In your company's Project I environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "hard",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q45)"
+        },
+        {
+          "id": "google-generative-ai-leader-q46",
+          "question": "[Responsible AI Scenario 10] In your company's Project J environment: Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+          "options": [
+            "Maximizing the model's creativity regardless of factual accuracy",
+            "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+            "Locking model outputs to prevent any variation in response",
+            "Sharing user prompts publicly to foster model collaboration"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q46)"
+        },
+        {
+          "id": "google-generative-ai-leader-q47",
+          "question": "[Vertex AI Offerings Scenario 10] In your company's Project J environment: Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+          "options": [
+            "Compute Engine VMs with manually installed PyTorch",
+            "Vertex AI Agent Builder (Search and Conversation)",
+            "Cloud Translation API",
+            "BigQuery ML with custom linear regression models"
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q47)"
+        },
+        {
+          "id": "google-generative-ai-leader-q48",
+          "question": "[Generative AI Concepts Scenario 10] In your company's Project J environment: What is the primary difference between Generative AI and Discriminative AI?",
+          "options": [
+            "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+            "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+            "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+            "Discriminative AI uses deep learning, whereas Generative AI does not."
+          ],
+          "correctAnswerIndex": 1,
+          "difficulty": "hard",
+          "explanation": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q48)"
+        },
+        {
+          "id": "google-generative-ai-leader-q49",
+          "question": "[Retrieval-Augmented Generation (RAG) Scenario 10] In your company's Project J environment: Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+          "options": [
+            "Increasing the model's temperature parameter to maximum",
+            "Fine-tuning the foundation model every hour",
+            "Retrieval-Augmented Generation (RAG)",
+            "Hardcoding answers inside the prompt itself"
+          ],
+          "correctAnswerIndex": 2,
+          "difficulty": "hard",
+          "explanation": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q49)"
+        },
+        {
+          "id": "google-generative-ai-leader-q50",
+          "question": "[Gemini for Google Cloud Scenario 10] In your company's Project J environment: Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+          "options": [
+            "Gemini for Google Cloud",
+            "Google Cloud Looker",
+            "Vertex AI AutoML",
+            "App Engine Standard"
+          ],
+          "correctAnswerIndex": 0,
+          "difficulty": "hard",
+          "explanation": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security. (Difficulty: Hard, Question Ref: google-generative-ai-leader-q50)"
+        }
+      ]
+    },
+    {
       "id": "google-professional-cloud-architect",
       "provider": "google-cloud",
       "name": "Google Professional Cloud Architect (PCA)",
@@ -1470,7 +2184,7 @@
       "links": [
         {
           "title": "Official GCP Exam Page",
-          "url": "https://cloud.google.com/learn/certification/professional-cloud-architect"
+          "url": "https://cloud.google.com/learn/certification/cloud-architect"
         },
         {
           "title": "GCP Documentation Portal",
@@ -2890,7 +3604,7 @@
       "links": [
         {
           "title": "Official GCP Exam Page",
-          "url": "https://cloud.google.com/learn/certification/professional-cloud-developer"
+          "url": "https://cloud.google.com/learn/certification/cloud-developer"
         },
         {
           "title": "GCP Documentation Portal",
@@ -3600,7 +4314,7 @@
       "links": [
         {
           "title": "Official GCP Exam Page",
-          "url": "https://cloud.google.com/learn/certification/professional-cloud-security-engineer"
+          "url": "https://cloud.google.com/learn/certification/cloud-security-engineer"
         },
         {
           "title": "GCP Documentation Portal",
@@ -4310,7 +5024,7 @@
       "links": [
         {
           "title": "Official GCP Exam Page",
-          "url": "https://cloud.google.com/learn/certification/professional-cloud-network-engineer"
+          "url": "https://cloud.google.com/learn/certification/cloud-network-engineer"
         },
         {
           "title": "GCP Documentation Portal",
@@ -5020,7 +5734,7 @@
       "links": [
         {
           "title": "Official GCP Exam Page",
-          "url": "https://cloud.google.com/learn/certification/professional-cloud-devops-engineer"
+          "url": "https://cloud.google.com/learn/certification/cloud-devops-engineer"
         },
         {
           "title": "GCP Documentation Portal",
@@ -5730,7 +6444,7 @@
       "links": [
         {
           "title": "Official GCP Exam Page",
-          "url": "https://cloud.google.com/learn/certification/professional-machine-learning-engineer"
+          "url": "https://cloud.google.com/learn/certification/machine-learning-engineer"
         },
         {
           "title": "GCP Documentation Portal",

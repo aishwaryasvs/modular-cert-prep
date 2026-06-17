@@ -143,6 +143,92 @@ certifications_data = [
         ]
     },
     {
+        "id": "google-generative-ai-leader",
+        "provider": "google-cloud",
+        "name": "Google Cloud Generative AI Leader",
+        "description": "Validates foundational knowledge of Generative AI concepts, responsible AI development, and deploying gen AI solutions strategically using Vertex AI, Gemini, and Agent Builder.",
+        "icon": "🤖",
+        "cheatsheet": {
+            "summary": "Focuses on business-level strategy, ethics, foundation models (LLMs), Vertex AI platform solutions, Gemini integration, and responsible AI implementation.",
+            "coreConcepts": [
+                {"name": "Foundation Models & LLMs", "desc": "Large pre-trained neural networks (like Gemini) that can be adapted to various downstream tasks with minimal fine-tuning."},
+                {"name": "Generative AI vs Discriminative AI", "desc": "Generative AI generates new content (text, image, audio), while Discriminative AI classifies or predicts patterns within existing data."},
+                {"name": "Responsible AI & Governance", "desc": "Implementing safety filters, bias mitigation, data governance, and addressing copyright issues under Google Cloud's AI principles."},
+                {"name": "Prompt Engineering & RAG", "desc": "Prompt Engineering optimizes queries to LLMs. Retrieval-Augmented Generation (RAG) grounds LLM outputs using enterprise databases for accuracy."}
+            ],
+            "commands": [
+                {"cmd": "Vertex AI Search & Conversation", "desc": "No-code platform to build enterprise-grade search engines and generative chat agents."},
+                {"cmd": "Gemini for Google Cloud", "desc": "Always-on collaborator helping developers write code, manage resources, and secure cloud environments."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Accurate Customer Q&A Agent", "solution": "Use Vertex AI Agent Builder to create a chat agent, connect it to enterprise PDF documentation in Cloud Storage using RAG, and enable safety filters."},
+                {"scenario": "Securing Gen AI Applications", "solution": "Deploy LLMs via Vertex AI API, configure VPC Service Controls to isolate training data, and assign specific IAM roles for API invocation."}
+            ]
+        },
+        "topics": [
+            {
+                "topic": "Responsible AI",
+                "q": "Which of the following aligns with Google's Responsible AI principles when deploying generative models?",
+                "opts": [
+                    "Maximizing the model's creativity regardless of factual accuracy",
+                    "Ensuring safety evaluations, monitoring bias, and implementing safety filters",
+                    "Locking model outputs to prevent any variation in response",
+                    "Sharing user prompts publicly to foster model collaboration"
+                ],
+                "ans": 1,
+                "exp": "Responsible AI practices require continuous evaluation for safety, bias tracking, and deploying guardrails/filters to prevent unsafe content generation."
+            },
+            {
+                "topic": "Vertex AI Offerings",
+                "q": "Your business needs to build a custom AI chatbot that can answer customer queries using your internal company wikis and PDF files, without writing complex machine learning pipelines. Which Google Cloud tool should you select?",
+                "opts": [
+                    "Compute Engine VMs with manually installed PyTorch",
+                    "Vertex AI Agent Builder (Search and Conversation)",
+                    "Cloud Translation API",
+                    "BigQuery ML with custom linear regression models"
+                ],
+                "ans": 1,
+                "exp": "Vertex AI Agent Builder enables rapid construction of enterprise-grade search engines and generative chatbots grounded in custom internal data with minimal code."
+            },
+            {
+                "topic": "Generative AI Concepts",
+                "q": "What is the primary difference between Generative AI and Discriminative AI?",
+                "opts": [
+                    "Generative AI only processes numerical data, whereas Discriminative AI processes natural text.",
+                    "Generative AI creates new data instances based on learned patterns, while Discriminative AI classifies existing data.",
+                    "Generative AI runs only on-premises, while Discriminative AI runs in the cloud.",
+                    "Discriminative AI uses deep learning, whereas Generative AI does not."
+                ],
+                "ans": 1,
+                "exp": "Generative AI models learn data distributions to generate new, original content (e.g., text, images), whereas Discriminative AI predicts labels or categories by distinguishing between data points."
+            },
+            {
+                "topic": "Retrieval-Augmented Generation (RAG)",
+                "q": "Your company's LLM frequently outputs outdated or incorrect information about product availability. Which design pattern should you implement to ground the model's responses in real-time inventory databases?",
+                "opts": [
+                    "Increasing the model's temperature parameter to maximum",
+                    "Fine-tuning the foundation model every hour",
+                    "Retrieval-Augmented Generation (RAG)",
+                    "Hardcoding answers inside the prompt itself"
+                ],
+                "ans": 2,
+                "exp": "Retrieval-Augmented Generation (RAG) queries dynamic external databases to retrieve factual, real-time context and appends it to the user's prompt, reducing hallucinations."
+            },
+            {
+                "topic": "Gemini for Google Cloud",
+                "q": "Which tool provides conversational assistance to help write infrastructure code, analyze cloud costs, and troubleshoot GCP resource configuration?",
+                "opts": [
+                    "Gemini for Google Cloud",
+                    "Google Cloud Looker",
+                    "Vertex AI AutoML",
+                    "App Engine Standard"
+                ],
+                "ans": 0,
+                "exp": "Gemini for Google Cloud acts as an always-on AI collaborator that assists with writing code, explaining cloud resource properties, and optimizing GCP billing/security."
+            }
+        ]
+    },
+    {
         "id": "google-professional-cloud-architect",
         "provider": "google-cloud",
         "name": "Google Professional Cloud Architect (PCA)",
@@ -899,8 +985,21 @@ certifications_data = [
 # Helper to generate links for each certification dynamically
 def get_links_for_cert(cert_id):
     if "google" in cert_id:
+        slug_map = {
+            'google-associate-cloud-engineer': 'associate-cloud-engineer',
+            'google-cloud-digital-leader': 'cloud-digital-leader',
+            'google-generative-ai-leader': 'generative-ai-leader',
+            'google-professional-cloud-architect': 'cloud-architect',
+            'google-professional-data-engineer': 'professional-data-engineer',
+            'google-professional-cloud-developer': 'cloud-developer',
+            'google-professional-cloud-security-engineer': 'cloud-security-engineer',
+            'google-professional-cloud-network-engineer': 'cloud-network-engineer',
+            'google-professional-cloud-devops-engineer': 'cloud-devops-engineer',
+            'google-professional-machine-learning-engineer': 'machine-learning-engineer'
+        }
+        slug = slug_map.get(cert_id, cert_id.replace('google-', ''))
         return [
-            { "title": "Official GCP Exam Page", "url": f"https://cloud.google.com/learn/certification/{cert_id.replace('google-', '')}" if cert_id != 'google-associate-cloud-engineer' else "https://cloud.google.com/learn/certification/associate-cloud-engineer" },
+            { "title": "Official GCP Exam Page", "url": f"https://cloud.google.com/learn/certification/{slug}" },
             { "title": "GCP Documentation Portal", "url": "https://cloud.google.com/docs" },
             { "title": "Google Cloud Training Portal", "url": "https://www.cloudskillsboost.google" }
         ]

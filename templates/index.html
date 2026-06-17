@@ -225,6 +225,12 @@
                                     <span class="timer-icon">⏳</span>
                                     <span id="quiz-timer" class="timer-text">20:00</span>
                                 </div>
+
+                                <div class="grid-summary-banner" id="grid-summary-banner">
+                                    <span class="summary-badge answered" id="summary-answered">0 Answered</span>
+                                    <span class="summary-badge flagged" id="summary-flagged">0 Flagged</span>
+                                    <span class="summary-badge unanswered" id="summary-unanswered">20 Unanswered</span>
+                                </div>
                                 
                                 <h3 class="panel-section-title">Question Grid</h3>
                                 <div class="question-grid-nav" id="question-grid-nav">
@@ -251,8 +257,11 @@
                             <button id="cheatsheet-back-btn" class="text-btn flex-btn">
                                 <span class="btn-arrow">&larr;</span> Back to Dashboard
                             </button>
-                            <h1 id="cheatsheet-title">Cheat Sheet</h1>
-                            <p id="cheatsheet-desc" class="subtitle">Quick reference study guide for core services, CLI commands, and architectural patterns.</p>
+                             <h1 id="cheatsheet-title">Cheat Sheet</h1>
+                             <p id="cheatsheet-desc" class="subtitle">Quick reference study guide for core services, CLI commands, and architectural patterns.</p>
+                             <div class="search-filter-wrapper" style="margin-top: 20px; max-width: 500px;">
+                                 <input type="text" id="cheatsheet-search-input" class="search-box" placeholder="🔍 Search concepts, CLI commands, scenarios...">
+                             </div>
                         </div>
 
                         <!-- Summary Card -->
@@ -338,13 +347,19 @@
                             <h1 class="scorecard-title">Session Completed!</h1>
                             <p id="scorecard-cert-name" class="scorecard-cert-name">Google Associate Cloud Engineer</p>
 
-                            <!-- Score Circle -->
-                            <div class="score-display">
-                                <div class="score-circle">
-                                    <span id="score-percentage" class="score-number">80%</span>
-                                    <span id="score-fraction" class="score-subtext">4 / 5</span>
-                                </div>
-                            </div>
+                             <!-- Score Circle -->
+                             <div class="score-display">
+                                 <div class="score-ring-wrapper">
+                                     <svg class="score-ring-svg" width="160" height="160" viewBox="0 0 160 160">
+                                         <circle class="score-ring-bg" cx="80" cy="80" r="70" stroke-width="8" fill="transparent"/>
+                                         <circle class="score-ring-bar" id="score-ring-bar" cx="80" cy="80" r="70" stroke-width="8" fill="transparent" stroke-dasharray="440" stroke-dashoffset="440"/>
+                                     </svg>
+                                     <div class="score-circle-inner">
+                                         <span id="score-percentage" class="score-number">80%</span>
+                                         <span id="score-fraction" class="score-subtext">4 / 5</span>
+                                     </div>
+                                 </div>
+                             </div>
 
                             <!-- Status Message -->
                             <div class="result-evaluation" id="result-evaluation-card">
@@ -359,15 +374,21 @@
                             </div>
                         </div>
 
-                        <!-- Question Review Breakdown -->
-                        <div class="review-breakdown-card">
-                            <h2 class="review-title">Detailed Question Review</h2>
-                            <p class="review-subtitle">Click on any question to review your answer, the correct option, and the in-depth explanation.</p>
-                            
-                            <div class="review-questions-list" id="review-questions-list">
-                                <!-- Dynamic review items injected -->
-                            </div>
-                        </div>
+                         <!-- Question Review Breakdown -->
+                         <div class="review-breakdown-card">
+                             <h2 class="review-title">Detailed Question Review</h2>
+                             <p class="review-subtitle">Click on any question to review your answer, the correct option, and the in-depth explanation.</p>
+                             
+                             <div class="review-filters">
+                                 <button type="button" class="filter-btn active" data-filter="all">All Questions</button>
+                                 <button type="button" class="filter-btn" data-filter="incorrect">Incorrect Only</button>
+                                 <button type="button" class="filter-btn" data-filter="flagged">Flagged Only</button>
+                             </div>
+ 
+                             <div class="review-questions-list" id="review-questions-list">
+                                 <!-- Dynamic review items injected -->
+                             </div>
+                         </div>
                     </div>
                 </section>
 
@@ -405,6 +426,18 @@
             <footer class="app-footer">
                 <p>&copy; 2026 CertPrep. Built for Cloud Professionals.</p>
             </footer>
+        </div>
+    </div>
+
+    <!-- Glassmorphic Confirmation Modal -->
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2 class="modal-title" id="confirm-modal-title">Finish Session?</h2>
+            <p class="modal-text" id="confirm-modal-text">Are you sure you want to finish? You still have unanswered questions.</p>
+            <div class="modal-actions">
+                <button type="button" id="confirm-modal-cancel" class="primary-btn secondary-style">Resume Study</button>
+                <button type="button" id="confirm-modal-ok" class="primary-btn error-action-style">Finish & Submit</button>
+            </div>
         </div>
     </div>
 </body>

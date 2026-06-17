@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentFlashcards = [];
     let currentFlashcardIndex = 0;
     let flashcardViewMode = 'checklist'; // 'checklist' or 'study'
+    let currentView = 'dashboard';
 
     // Providers registry
     const providers = {
@@ -209,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- View Router ---
     const switchView = (viewName) => {
+        currentView = viewName;
         const views = [dashboardView, quizConfigView, quizView, cheatsheetView, flashcardView, scorecardView, checklistView];
         views.forEach(view => {
             view.classList.remove('active');
@@ -341,6 +343,11 @@ document.addEventListener('DOMContentLoaded', () => {
         cheatsheetTitle.textContent = `${currentCert.name} Cheat Sheet`;
         cheatsheetDesc.textContent = `Essential study guide covering core concepts, CLI commands, and architectural patterns.`;
         
+        const cheatsheetSearchInput = document.getElementById('cheatsheet-search-input');
+        if (cheatsheetSearchInput) {
+            cheatsheetSearchInput.value = '';
+        }
+
         // Summary
         csSummaryText.textContent = currentCert.cheatsheet.summary || "No overview summary provided.";
 
@@ -965,26 +972,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateQuestionNavigationGridState = () => {
         if (!activeSession || activeSession.mode !== 'exam') return;
 
+        let answeredCount = 0;
+        let flaggedCount = 0;
+        let unansweredCount = 0;
+
         const buttons = questionGridNav.querySelectorAll('.grid-nav-btn');
         buttons.forEach((btn, idx) => {
-            // Reset state classes
             btn.className = 'grid-nav-btn';
 
-            // Highlight current
             if (idx === activeSession.currentQuestionIndex) {
                 btn.classList.add('current');
             }
 
-            // Flagged
             if (activeSession.flagged[idx]) {
                 btn.classList.add('flagged');
+                flaggedCount++;
             }
 
-            // Answered
             if (activeSession.answers[idx] !== null) {
                 btn.classList.add('answered');
+                answeredCount++;
+            } else {
+                unansweredCount++;
             }
         });
+
+        const summaryAnswered = document.getElementById('summary-answered');
+        const summaryFlagged = document.getElementById('summary-flagged');
+        const summaryUnanswered = document.getElementById('summary-unanswered');
+        if (summaryAnswered) summaryAnswered.textContent = `${answeredCount} Answered`;
+        if (summaryFlagged) summaryFlagged.textContent = `${flaggedCount} Flagged`;
+        if (summaryUnanswered) summaryUnanswered.textContent = `${unansweredCount} Unanswered`;
     };
 
     // --- Render Question ---
@@ -1181,16 +1199,15 @@ document.addEventListener('DOMContentLoaded', () => {
     submitExamBtn.addEventListener('click', () => {
         if (!activeSession) return;
 
-        // Check for unanswered questions
         const unansweredCount = activeSession.answers.filter(ans => ans === null).length;
-        let warningText = 'Are you sure you want to submit your exam?';
+        let warningText = 'Are you sure you want to finish and submit your exam simulation?';
         if (unansweredCount > 0) {
-            warningText = `You have ${unansweredCount} unanswered question(s). Are you sure you want to submit your exam now?`;
+            warningText = `You have ${unansweredCount} unanswered question(s) left. Are you sure you want to finish and submit your exam now?`;
         }
 
-        if (confirm(warningText)) {
+        showConfirmModal('Submit Simulation?', warningText, () => {
             submitExam();
-        }
+        });
     });
 
     const submitExam = () => {
@@ -1233,21 +1250,36 @@ document.addEventListener('DOMContentLoaded', () => {
         scorePercentage.textContent = `${scorePct}%`;
         scoreFraction.textContent = `${correctCount} / ${total}`;
 
-        const scoreCircle = document.querySelector('.score-circle');
-        scoreCircle.className = 'score-circle'; // Reset classes
+        const scoreRingBar = document.getElementById('score-ring-bar');
+        if (scoreRingBar) {
+            const offset = 440 - (440 * scorePct) / 100;
+            scoreRingBar.style.strokeDashoffset = offset;
+            
+            const isPassing = scorePct >= 70;
+            if (isPassing) {
+                scoreRingBar.style.stroke = 'var(--success)';
+            } else {
+                scoreRingBar.style.stroke = 'var(--error)';
+            }
+        }
 
         const isPassing = scorePct >= 70; // 70% threshold standard
         
         if (isPassing) {
             scorecardBadge.textContent = '🎉';
-            scoreCircle.classList.add('pass');
             resultStatusTitle.textContent = 'Congratulations, you passed!';
             resultStatusMessage.textContent = `Excellent job! You answered ${correctCount} out of ${total} questions correctly (${scorePct}%) and met the benchmark logic for certification readiness.`;
         } else {
             scorecardBadge.textContent = '📚';
-            scoreCircle.classList.add('fail');
             resultStatusTitle.textContent = 'Keep practicing!';
             resultStatusMessage.textContent = `You scored ${correctCount} out of ${total} (${scorePct}%). We recommend reviewing the detailed explanations below and retrying until you achieve at least 70%.`;
+        }
+
+        const allFilterBtn = document.querySelector('.review-filters [data-filter="all"]');
+        if (allFilterBtn) {
+            const filterButtons = document.querySelectorAll('.review-filters .filter-btn');
+            filterButtons.forEach(b => b.classList.remove('active'));
+            allFilterBtn.classList.add('active');
         }
 
         // Render detailed review accordions
@@ -1268,6 +1300,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const item = document.createElement('div');
             item.className = 'review-item';
+            item.setAttribute('data-correct', isCorrect ? 'true' : 'false');
+            item.setAttribute('data-flagged', activeSession.flagged[idx] ? 'true' : 'false');
             item.innerHTML = `
                 <div class="review-header-toggle">
                     <span class="review-q-summary">
@@ -1290,23 +1324,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            // Inject option lists with styled highlights
+            // Populate options inside review body
             const optsContainer = item.querySelector('.options-list');
-            question.options.forEach((optionText, optIdx) => {
-                const letter = String.fromCharCode(65 + optIdx);
+            question.options.forEach((opt, oIdx) => {
                 const optLabel = document.createElement('div');
-                optLabel.className = 'option-label locked';
+                optLabel.className = 'review-option';
                 
-                // Styles
-                if (optIdx === question.correctAnswerIndex) {
-                    optLabel.classList.add('correct');
-                } else if (optIdx === userAnsIdx) {
-                    optLabel.classList.add('incorrect');
+                // Styling correct, user incorrect, correct etc.
+                let stateClass = '';
+                if (oIdx === question.correctAnswerIndex) {
+                    stateClass = 'correct'; // highlight true correct answer
+                } else if (oIdx === userAnsIdx && !isCorrect) {
+                    stateClass = 'incorrect'; // highlight incorrect user choice
                 }
-                
+
+                optLabel.className = `review-option-card ${stateClass}`;
                 optLabel.innerHTML = `
-                    <span class="option-letter">${letter}</span>
-                    <span class="option-text">${escapeHtml(optionText)}</span>
+                    <span class="option-marker">${String.fromCharCode(65 + oIdx)}</span>
+                    <span class="option-text">${escapeHtml(opt)}</span>
                 `;
                 optsContainer.appendChild(optLabel);
             });
@@ -1350,6 +1385,138 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return text.replace(/[&<>"']/g, function(m) { return map[m]; });
     };
+
+    // --- Glassmorphic Confirmation Modal Helper ---
+    const showConfirmModal = (title, text, onOk) => {
+        const modal = document.getElementById('confirm-modal');
+        const modalTitle = document.getElementById('confirm-modal-title');
+        const modalText = document.getElementById('confirm-modal-text');
+        const btnCancel = document.getElementById('confirm-modal-cancel');
+        const btnOk = document.getElementById('confirm-modal-ok');
+
+        modalTitle.textContent = title;
+        modalText.textContent = text;
+        modal.classList.remove('hidden');
+
+        // Clone buttons to clear existing event listeners
+        const newBtnCancel = btnCancel.cloneNode(true);
+        const newBtnOk = btnOk.cloneNode(true);
+        btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+        btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+
+        newBtnCancel.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        newBtnOk.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            onOk();
+        });
+    };
+
+    // --- Scorecard Question Filters ---
+    const applyReviewFilter = (filterType) => {
+        const items = reviewQuestionsList.querySelectorAll('.review-item');
+        items.forEach(item => {
+            const isCorrect = item.getAttribute('data-correct') === 'true';
+            const isFlagged = item.getAttribute('data-flagged') === 'true';
+
+            if (filterType === 'all') {
+                item.style.display = '';
+            } else if (filterType === 'incorrect') {
+                item.style.display = !isCorrect ? '' : 'none';
+            } else if (filterType === 'flagged') {
+                item.style.display = isFlagged ? '' : 'none';
+            }
+        });
+    };
+
+    const filterButtons = document.querySelectorAll('.review-filters .filter-btn');
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            const filter = e.target.getAttribute('data-filter');
+            applyReviewFilter(filter);
+        });
+    });
+
+    // --- Cheatsheet Local Search Filter ---
+    const cheatsheetSearchInput = document.getElementById('cheatsheet-search-input');
+    if (cheatsheetSearchInput) {
+        cheatsheetSearchInput.addEventListener('input', () => {
+            const query = cheatsheetSearchInput.value.toLowerCase().trim();
+            
+            // Concepts list
+            csCoreServices.querySelectorAll('li').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+
+            // Commands list
+            csCommands.querySelectorAll('.cmd-item').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+
+            // Scenarios list
+            csPatterns.querySelectorAll('.pattern-item').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        });
+    }
+
+    // --- Keyboard Hotkeys & Navigation ---
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        if (currentView === 'flashcard') {
+            if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault();
+                flashcardCardElement.click();
+            } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+                flashcardNextBtn.click();
+            } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+                flashcardPrevBtn.click();
+            }
+        } else if (currentView === 'quiz') {
+            if (!activeSession) return;
+
+            if (e.key >= '1' && e.key <= '4') {
+                const index = parseInt(e.key) - 1;
+                const options = optionsContainer.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+                if (options && options[index]) {
+                    options[index].click();
+                }
+            } else if (e.key.toLowerCase() === 'f') {
+                const flagCheckbox = document.getElementById('flag-checkbox');
+                const flagContainer = document.getElementById('flag-container');
+                if (flagCheckbox && flagContainer && !flagContainer.classList.contains('hidden')) {
+                    flagCheckbox.click();
+                }
+            } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+                const nextBtn = document.getElementById('next-question-btn');
+                if (nextBtn && !nextBtn.classList.contains('hidden')) {
+                    nextBtn.click();
+                }
+            } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+                const prevBtn = document.getElementById('prev-question-btn');
+                if (prevBtn && !prevBtn.classList.contains('hidden')) {
+                    prevBtn.click();
+                }
+            } else if (e.key === 'Enter') {
+                const submitBtn = document.getElementById('submit-answer-btn');
+                const nextBtn = document.getElementById('next-question-btn');
+                if (submitBtn && !submitBtn.disabled && !submitBtn.classList.contains('hidden')) {
+                    e.preventDefault();
+                    submitBtn.click();
+                } else if (nextBtn && !nextBtn.classList.contains('hidden')) {
+                    e.preventDefault();
+                    nextBtn.click();
+                }
+            }
+        }
+    });
 
     // --- Init App ---
     initTheme();

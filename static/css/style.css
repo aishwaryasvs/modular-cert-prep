@@ -1690,15 +1690,226 @@ body {
     opacity: 0.7;
 }
 
-.checklist-item.checked {
-    background: rgba(52, 211, 153, 0.015);
-    border-color: rgba(52, 211, 153, 0.12);
-}
-
 .checklist-item.checked:hover {
     background: rgba(52, 211, 153, 0.025);
     border-color: rgba(52, 211, 153, 0.2);
 }
+
+/* --- UX Improvements CSS --- */
+
+/* 1. Timer pulse alarm */
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4);
+        border-color: rgba(248, 113, 113, 0.6);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(248, 113, 113, 0);
+        border-color: rgba(248, 113, 113, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
+        border-color: rgba(248, 113, 113, 0.6);
+    }
+}
+
+.timer-display.low-time {
+    color: var(--error) !important;
+    border: 1.5px solid var(--error) !important;
+    animation: pulse-red 1.5s infinite;
+    background: rgba(248, 113, 113, 0.05);
+}
+
+/* 2. Grid summary banner in quiz simulation */
+.grid-summary-banner {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.summary-badge {
+    flex: 1;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 6px 4px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+.summary-badge.answered {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    color: var(--accent-primary);
+}
+
+.summary-badge.flagged {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+}
+
+.summary-badge.unanswered {
+    background: rgba(148, 163, 184, 0.08);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    color: var(--text-secondary);
+}
+
+/* 3. Search Box */
+.search-filter-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-box {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.search-box:focus {
+    border-color: var(--accent-primary);
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.15);
+}
+
+/* 4. Score SVG Ring styling */
+.score-ring-wrapper {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto;
+}
+
+.score-ring-svg {
+    transform: rotate(-90deg);
+}
+
+.score-ring-bg {
+    stroke: rgba(255, 255, 255, 0.04);
+}
+
+.score-ring-bar {
+    stroke: var(--accent-primary);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease-out, stroke 0.3s ease;
+}
+
+.score-circle-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 5. Scorecard Review Filter Buttons */
+.review-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.filter-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: #0b0f19;
+    font-weight: 600;
+}
+
+/* 6. Confirmation Modal overlay and card */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(11, 15, 25, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}
+
+.modal-overlay.hidden {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-card {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    text-align: center;
+    transform: scale(1);
+    transition: transform 0.25s ease;
+}
+
+.modal-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.modal-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.modal-actions button {
+    flex: 1;
+}
+
 
 
 

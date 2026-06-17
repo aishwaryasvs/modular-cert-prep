@@ -145,6 +145,51 @@
         .auth-footer a:hover {
             text-decoration: underline;
         }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .password-wrapper input {
+            padding-right: 44px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.15rem;
+            user-select: none;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-toggle:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Validation border highlights */
+        input.invalid {
+            border-color: var(--error) !important;
+            box-shadow: 0 0 8px rgba(248, 113, 113, 0.25) !important;
+        }
+
+        input.valid {
+            border-color: var(--success) !important;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.25) !important;
+        }
+
+        .validation-warning {
+            font-size: 0.8rem;
+            color: var(--error);
+            margin-top: 6px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -159,14 +204,18 @@
             </div>
             {% endif %}
 
-            <form method="POST">
+            <form method="POST" id="registerForm">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" required autofocus placeholder="Choose a username">
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required placeholder="Choose a password">
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" required placeholder="Choose a password">
+                        <span class="password-toggle" id="togglePassword">👁️</span>
+                    </div>
+                    <div class="validation-warning" id="passwordWarning">Password must be at least 6 characters.</div>
                 </div>
                 <button type="submit" class="submit-btn">Create Account</button>
             </form>
@@ -176,5 +225,46 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const passwordWarning = document.getElementById('passwordWarning');
+        const registerForm = document.getElementById('registerForm');
+
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+
+        function validatePassword() {
+            const val = passwordInput.value;
+            if (val.length === 0) {
+                passwordInput.classList.remove('valid', 'invalid');
+                passwordWarning.style.display = 'none';
+                return false;
+            } else if (val.length < 6) {
+                passwordInput.classList.remove('valid');
+                passwordInput.classList.add('invalid');
+                passwordWarning.style.display = 'block';
+                return false;
+            } else {
+                passwordInput.classList.remove('invalid');
+                passwordInput.classList.add('valid');
+                passwordWarning.style.display = 'none';
+                return true;
+            }
+        }
+
+        passwordInput.addEventListener('input', validatePassword);
+
+        registerForm.addEventListener('submit', (e) => {
+            if (!validatePassword()) {
+                e.preventDefault();
+                passwordInput.focus();
+            }
+        });
+    </script>
 </body>
 </html>

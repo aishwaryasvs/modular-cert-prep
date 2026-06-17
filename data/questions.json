@@ -51,6 +51,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/associate-cloud-engineer"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-associate-cloud-engineer-q1",
@@ -743,6 +757,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/cloud-digital-leader"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-cloud-digital-leader-q1",
@@ -1439,6 +1467,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/professional-cloud-architect"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-professional-cloud-architect-q1",
@@ -2135,6 +2177,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/professional-data-engineer"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-professional-data-engineer-q1",
@@ -2831,6 +2887,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/professional-cloud-developer"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-professional-cloud-developer-q1",
@@ -3527,6 +3597,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/professional-cloud-security-engineer"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-professional-cloud-security-engineer-q1",
@@ -4223,6 +4307,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/professional-cloud-network-engineer"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-professional-cloud-network-engineer-q1",
@@ -4919,6 +5017,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/professional-cloud-devops-engineer"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-professional-cloud-devops-engineer-q1",
@@ -5615,6 +5727,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official GCP Exam Page",
+          "url": "https://cloud.google.com/learn/certification/professional-machine-learning-engineer"
+        },
+        {
+          "title": "GCP Documentation Portal",
+          "url": "https://cloud.google.com/docs"
+        },
+        {
+          "title": "Google Cloud Training Portal",
+          "url": "https://www.cloudskillsboost.google"
+        }
+      ],
       "questions": [
         {
           "id": "google-professional-machine-learning-engineer-q1",
@@ -6315,6 +6441,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official dbt Exam Page",
+          "url": "https://www.getdbt.com/co/dbt-certification/developer-certification-exam/"
+        },
+        {
+          "title": "dbt Core Developer Docs",
+          "url": "https://docs.getdbt.com"
+        },
+        {
+          "title": "dbt Slack Community Support",
+          "url": "https://community.getdbt.com"
+        }
+      ],
       "questions": [
         {
           "id": "dbt-certified-developer-q1",
@@ -7015,6 +7155,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official dbt Exam Page",
+          "url": "https://www.getdbt.com/co/dbt-certification/analytics-engineering-certification-exam/"
+        },
+        {
+          "title": "dbt Core Developer Docs",
+          "url": "https://docs.getdbt.com"
+        },
+        {
+          "title": "dbt Slack Community Support",
+          "url": "https://community.getdbt.com"
+        }
+      ],
       "questions": [
         {
           "id": "dbt-certified-analytics-engineer-q1",
@@ -7711,6 +7865,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official AWS Exam Page",
+          "url": "https://aws.amazon.com/certification/certified-cloud-practitioner/"
+        },
+        {
+          "title": "AWS Documentation Portal",
+          "url": "https://docs.aws.amazon.com"
+        },
+        {
+          "title": "AWS Free Tier Management Console",
+          "url": "https://console.aws.amazon.com"
+        }
+      ],
       "questions": [
         {
           "id": "aws-certified-cloud-practitioner-q1",
@@ -8407,6 +8575,20 @@
           }
         ]
       },
+      "links": [
+        {
+          "title": "Official Microsoft AZ-900 Page",
+          "url": "https://learn.microsoft.com/en-us/credentials/certifications/exams/az-900/"
+        },
+        {
+          "title": "Microsoft Azure Documentation",
+          "url": "https://learn.microsoft.com/en-us/azure/"
+        },
+        {
+          "title": "Azure Portal Access Console",
+          "url": "https://portal.azure.com"
+        }
+      ],
       "questions": [
         {
           "id": "microsoft-azure-fundamentals-q1",

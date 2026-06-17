@@ -896,6 +896,35 @@ certifications_data = [
     }
 ]
 
+# Helper to generate links for each certification dynamically
+def get_links_for_cert(cert_id):
+    if "google" in cert_id:
+        return [
+            { "title": "Official GCP Exam Page", "url": f"https://cloud.google.com/learn/certification/{cert_id.replace('google-', '')}" if cert_id != 'google-associate-cloud-engineer' else "https://cloud.google.com/learn/certification/associate-cloud-engineer" },
+            { "title": "GCP Documentation Portal", "url": "https://cloud.google.com/docs" },
+            { "title": "Google Cloud Training Portal", "url": "https://www.cloudskillsboost.google" }
+        ]
+    elif "dbt" in cert_id:
+        slug = "developer-certification-exam" if "developer" in cert_id else "analytics-engineering-certification-exam"
+        return [
+            { "title": "Official dbt Exam Page", "url": f"https://www.getdbt.com/co/dbt-certification/{slug}/" },
+            { "title": "dbt Core Developer Docs", "url": "https://docs.getdbt.com" },
+            { "title": "dbt Slack Community Support", "url": "https://community.getdbt.com" }
+        ]
+    elif "aws" in cert_id:
+        return [
+            { "title": "Official AWS Exam Page", "url": "https://aws.amazon.com/certification/certified-cloud-practitioner/" },
+            { "title": "AWS Documentation Portal", "url": "https://docs.aws.amazon.com" },
+            { "title": "AWS Free Tier Management Console", "url": "https://console.aws.amazon.com" }
+        ]
+    elif "microsoft" in cert_id:
+        return [
+            { "title": "Official Microsoft AZ-900 Page", "url": "https://learn.microsoft.com/en-us/credentials/certifications/exams/az-900/" },
+            { "title": "Microsoft Azure Documentation", "url": "https://learn.microsoft.com/en-us/azure/" },
+            { "title": "Azure Portal Access Console", "url": "https://portal.azure.com" }
+        ]
+    return []
+
 # Function to generate 50 unique questions for each certification
 def generate_questions():
     final_certs = []
@@ -956,10 +985,12 @@ def generate_questions():
             "description": desc,
             "icon": icon,
             "cheatsheet": cheatsheet,
+            "links": get_links_for_cert(cert_id),
             "questions": generated_questions
         })
         
     return {"certifications": final_certs}
+
 
 # Generate and write output
 data = generate_questions()

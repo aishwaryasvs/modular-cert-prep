@@ -72,8 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dashboard
     const certificationsGrid = document.getElementById('certifications-grid');
     const cheatsheetsGrid = document.getElementById('cheatsheets-grid');
+    const linksGrid = document.getElementById('links-grid');
     const tabPracticeExams = document.getElementById('tab-practice-exams');
     const tabCheatsheets = document.getElementById('tab-cheatsheets');
+    const tabLinks = document.getElementById('tab-links');
     const dashboardLoading = document.getElementById('dashboard-loading');
     const dashboardTitle = document.getElementById('dashboard-title');
     const dashboardSubtitle = document.getElementById('dashboard-subtitle');
@@ -370,15 +372,28 @@ document.addEventListener('DOMContentLoaded', () => {
     tabPracticeExams.addEventListener('click', () => {
         tabPracticeExams.classList.add('active');
         tabCheatsheets.classList.remove('active');
+        tabLinks.classList.remove('active');
         certificationsGrid.classList.remove('hidden');
         cheatsheetsGrid.classList.add('hidden');
+        linksGrid.classList.add('hidden');
     });
 
     tabCheatsheets.addEventListener('click', () => {
         tabCheatsheets.classList.add('active');
         tabPracticeExams.classList.remove('active');
+        tabLinks.classList.remove('active');
         cheatsheetsGrid.classList.remove('hidden');
         certificationsGrid.classList.add('hidden');
+        linksGrid.classList.add('hidden');
+    });
+
+    tabLinks.addEventListener('click', () => {
+        tabLinks.classList.add('active');
+        tabPracticeExams.classList.remove('active');
+        tabCheatsheets.classList.remove('active');
+        linksGrid.classList.remove('hidden');
+        certificationsGrid.classList.add('hidden');
+        cheatsheetsGrid.classList.add('hidden');
     });
 
     // --- Render Dashboard (Exams under selected provider) ---
@@ -386,11 +401,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset tab state to default (Practice Exams active)
         tabPracticeExams.classList.add('active');
         tabCheatsheets.classList.remove('active');
+        tabLinks.classList.remove('active');
         certificationsGrid.classList.remove('hidden');
         cheatsheetsGrid.classList.add('hidden');
+        linksGrid.classList.add('hidden');
 
         certificationsGrid.innerHTML = '';
         cheatsheetsGrid.innerHTML = '';
+        linksGrid.innerHTML = '';
         headerBreadcrumbs.textContent = providers[currentProvider] ? providers[currentProvider].name : 'Dashboard';
 
         const filtered = certifications.filter(c => c.provider === currentProvider);
@@ -398,11 +416,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filtered.length === 0) {
             certificationsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No certifications available under this provider yet.</p>';
             cheatsheetsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No study cheat sheets available under this provider yet.</p>';
+            linksGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No useful links configured for this provider yet.</p>';
             return;
         }
 
         dashboardTitle.textContent = `${providers[currentProvider].name} Certifications`;
-        dashboardSubtitle.textContent = `Select an option below to study cheat sheets or start interactive practice test sessions.`;
+        dashboardSubtitle.textContent = `Select an option below to study cheat sheets, access resources, or start interactive practice test sessions.`;
 
         filtered.forEach(cert => {
             // 1. Render Practice Exam Card
@@ -444,6 +463,34 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             cheatsheetsGrid.appendChild(csCard);
+
+            // 3. Render Links Card
+            const lCard = document.createElement('div');
+            lCard.className = 'cert-card';
+            
+            let linksHTML = '';
+            if (cert.links && cert.links.length > 0) {
+                cert.links.forEach(link => {
+                    linksHTML += `
+                        <a href="${link.url}" target="_blank" rel="noopener" class="primary-btn secondary-style flex-btn" style="text-align: left; width: 100%; margin-bottom: 8px; justify-content: space-between;">
+                            <span>${escapeHtml(link.title)}</span>
+                            <span>➔</span>
+                        </a>
+                    `;
+                });
+            } else {
+                linksHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem;">No resources configured.</p>';
+            }
+
+            lCard.innerHTML = `
+                <div class="cert-icon">${cert.icon || '📄'}</div>
+                <h2 class="cert-title">${cert.name} Resources</h2>
+                <p class="cert-desc">Direct access to official examination portals, study materials, and technical documentation.</p>
+                <div class="links-action-list" style="display: flex; flex-direction: column; width: 100%; margin-top: 16px;">
+                    ${linksHTML}
+                </div>
+            `;
+            linksGrid.appendChild(lCard);
         });
     };
 

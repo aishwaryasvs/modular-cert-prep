@@ -13,6 +13,11 @@ class TestCertPrepAuthAndDB(unittest.TestCase):
         
         self.client = app.test_client()
         
+        # Override the database engine with an isolated in-memory SQLite database
+        from sqlalchemy import create_engine
+        engine = create_engine('sqlite:///:memory:')
+        db._app_engines[app] = {None: engine}
+
         # Create all tables and seed within app context
         with app.app_context():
             db.create_all()

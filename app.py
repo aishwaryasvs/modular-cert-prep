@@ -28,9 +28,11 @@ def get_certifications():
             "name": cert.get("name"),
             "description": cert.get("description"),
             "icon": cert.get("icon", "📄"),
+            "provider": cert.get("provider"),
             "questionCount": len(cert.get("questions", []))
         })
     return jsonify(summary)
+
 
 @app.route('/api/certifications/<cert_id>', methods=['GET'])
 def get_certification_details(cert_id):

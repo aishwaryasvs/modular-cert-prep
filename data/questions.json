@@ -2,6 +2,7 @@
   "certifications": [
     {
       "id": "google-associate-cloud-engineer",
+      "provider": "google-cloud",
       "name": "Google Associate Cloud Engineer",
       "description": "Validates your ability to deploy applications, monitor operations, manage enterprise solutions, and configure networks and security on Google Cloud Platform.",
       "icon": "⚡",
@@ -29,50 +30,36 @@
           ],
           "correctAnswerIndex": 2,
           "explanation": "Cloud Run is a fully managed serverless container platform that automatically scales containerized applications up and down (including scaling down to zero instances when idle), charging you only for resources used. App Engine Flexible does not support scaling down to zero instances, and MIGs/GKE require more infrastructure management."
-        },
+        }
+      ]
+    },
+    {
+      "id": "google-cloud-digital-leader",
+      "provider": "google-cloud",
+      "name": "Google Cloud Digital Leader",
+      "description": "Validates foundational knowledge of cloud concepts, Google Cloud products, services, tools, features, and primary use cases.",
+      "icon": "☁️",
+      "questions": [
         {
-          "id": "gcp-ace-3",
-          "question": "Your company wants to perform a detailed analysis of its Google Cloud spending patterns over the last 6 months. You need to export the billing data to a queryable format with minimal effort. What is the recommended approach?",
+          "id": "gcp-cdl-1",
+          "question": "A business leader is evaluating moving customer workloads to Google Cloud but is concerned about compliance and physical security of servers. According to the Google Cloud Shared Responsibility Model, who is responsible for the physical security of data centers?",
           "options": [
-            "Write a Python script using the Billing API to fetch billing records and store them in a Cloud SQL database.",
-            "Configure Cloud Billing export to direct billing data to a BigQuery dataset from the Google Cloud Console.",
-            "Download monthly CSV invoices from the Billing console and upload them to Google Sheets.",
-            "Use Cloud Logging to filter billing logs and export them to a Cloud Storage bucket."
+            "The customer only",
+            "Google Cloud only",
+            "Shared equally between Google Cloud and the customer",
+            "A third-party auditing agency"
           ],
           "correctAnswerIndex": 1,
-          "explanation": "Google Cloud provides a native integration to export detailed billing data directly to BigQuery. Once set up, Cloud Billing automatically loads daily spending information into tables in your designated BigQuery dataset, allowing SQL-based analysis, dashboards, and reporting."
-        },
-        {
-          "id": "gcp-ace-4",
-          "question": "You are running a critical production web server on a Compute Engine virtual machine instance. You want to view application-level log files and system performance metrics (like memory utilization) inside Cloud Logging and Cloud Monitoring. What is required?",
-          "options": [
-            "Compute Engine VMs automatically send memory and custom application logs; no additional actions are needed.",
-            "Install the Ops Agent on the VM instance and configure it to collect and forward logs and metrics.",
-            "Enable the Cloud Logging API in the project and restart the VM instance.",
-            "Attach a read-write service account to the VM instance with the Logs Writer role."
-          ],
-          "correctAnswerIndex": 1,
-          "explanation": "By default, Compute Engine only exports basic hypervisor-level metrics (like CPU utilization and disk write throughput) and system boot logs. To collect OS-level metrics (such as memory usage) and custom application log files, you must install and configure the Ops Agent on the virtual machine."
-        },
-        {
-          "id": "gcp-ace-5",
-          "question": "You create a new custom VPC network named 'prod-vpc'. Within this network, you create two subnets: 'subnet-us' (10.0.1.0/24) in the us-central1 region, and 'subnet-eu' (10.0.2.0/24) in the europe-west1 region. What is the default internal connectivity status between a VM in 'subnet-us' and a VM in 'subnet-eu'?",
-          "options": [
-            "They cannot communicate internally because they are in different subnets and different regions.",
-            "They can communicate internally by default because Google Cloud custom VPCs have system-generated routing rules that connect all subnets in the VPC.",
-            "They can only communicate internally if you explicitly set up a VPN Gateway or VPC Network Peering between the regions.",
-            "They can only communicate if they are assigned public external IP addresses and route traffic via the public internet."
-          ],
-          "correctAnswerIndex": 1,
-          "explanation": "In Google Cloud, VPC networks are global resources. Subnets within the same VPC, regardless of their regions, are automatically connected via internal routes created by default. As long as firewall rules allow the traffic, VMs in different subnets across different regions can communicate using their internal IP addresses."
+          "explanation": "Under the Google Cloud Shared Responsibility Model, Google Cloud is solely responsible for physical security of data centers (securing the hardware, facility access, power grid, and physical environment), while the customer is responsible for configuring access policies to their virtual resources."
         }
       ]
     },
     {
       "id": "aws-certified-cloud-practitioner",
+      "provider": "aws",
       "name": "AWS Certified Cloud Practitioner",
       "description": "Provides a high-level overview of AWS cloud concepts, security, technology, architecture, and billing models.",
-      "icon": "☁️",
+      "icon": "🍊",
       "questions": [
         {
           "id": "aws-ccp-1",
@@ -85,30 +72,48 @@
           ],
           "correctAnswerIndex": 2,
           "explanation": "Under the AWS Shared Responsibility Model, AWS is responsible for security 'of' the cloud (physical security, virtualization hypervisors, hardware infrastructure), while the customer is responsible for security 'in' the cloud (network access controls, operating systems, applications, and customer data)."
-        },
+        }
+      ]
+    },
+    {
+      "id": "dbt-certified-developer",
+      "provider": "dbt",
+      "name": "dbt Certified Developer",
+      "description": "Validates expertise in analytics engineering workflows, dbt compilation, modeling, testing, documentation, and deployment practices.",
+      "icon": "🛠️",
+      "questions": [
         {
-          "id": "aws-ccp-2",
-          "question": "A company needs to store regulatory compliance documents for 7 years. The documents are rarely accessed but must be available within minutes if requested. Which Amazon S3 storage class offers the most cost-effective solution?",
+          "id": "dbt-dev-1",
+          "question": "You want to execute a dbt run but only run models that have been modified since your last production deployment. Assuming you have state files from the previous run available, which command-line flag syntax should you use?",
           "options": [
-            "Amazon S3 Standard",
-            "Amazon S3 Glacier Instant Retrieval",
-            "Amazon S3 Glacier Deep Archive",
-            "Amazon S3 Intelligent-Tiering"
+            "dbt run --select state:modified --state path/to/artifacts",
+            "dbt run --models changed --state path/to/artifacts",
+            "dbt run --only-modified --state path/to/artifacts",
+            "dbt run --diff state:modified"
           ],
-          "correctAnswerIndex": 1,
-          "explanation": "Amazon S3 Glacier Instant Retrieval is the most cost-effective storage class for archiving data that is rarely accessed but requires millisecond (immediate/minutes) retrieval. Glacier Deep Archive is cheaper but takes 12 hours for retrieval, and S3 Standard is too expensive for archival storage."
-        },
+          "correctAnswerIndex": 0,
+          "explanation": "dbt provides state-based selection utilizing the `--select state:modified` flag (or `-s state:modified`) coupled with pointing to the historical compilation artifacts folder using `--state path/to/artifacts`."
+        }
+      ]
+    },
+    {
+      "id": "microsoft-azure-fundamentals",
+      "provider": "microsoft",
+      "name": "Microsoft Azure Fundamentals (AZ-900)",
+      "description": "Covers foundational knowledge of Azure cloud services, security, privacy, compliance, trust, and pricing models.",
+      "icon": "🔷",
+      "questions": [
         {
-          "id": "aws-ccp-3",
-          "question": "Which AWS Cloud characteristic describes the ability to dynamically scale computing resources up or down automatically based on fluctuating workload demand?",
+          "id": "az-900-1",
+          "question": "Which Microsoft Azure service is a serverless compute option that enables you to execute code on-demand in response to events without managing virtual machines or infrastructure?",
           "options": [
-            "High Availability",
-            "Elasticity",
-            "Fault Tolerance",
-            "Durability"
+            "Azure Virtual Machines",
+            "Azure Kubernetes Service (AKS)",
+            "Azure Functions",
+            "Azure App Service"
           ],
-          "correctAnswerIndex": 1,
-          "explanation": "Elasticity is the ability to acquire resources as you need them and release them when you don't. In AWS, this is typically handled by services like Amazon EC2 Auto Scaling, which scale resources dynamically based on demand to control costs and performance."
+          "correctAnswerIndex": 2,
+          "explanation": "Azure Functions is Azure's serverless compute service. It lets you run code in response to events (HTTP requests, queue triggers, timers) without having to explicitly provision or manage servers/infrastructure."
         }
       ]
     }

@@ -5,6 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuestionIndex = 0;
     let selectedOptionIndex = null;
     let score = 0;
+    let currentProvider = null; // Track chosen provider
+
+    const providers = {
+        'google-cloud': { name: 'Google Cloud', icon: '☁️', desc: 'Google Cloud Platform professional exam preparation.' },
+        'aws': { name: 'AWS', icon: '🍊', desc: 'Amazon Web Services cloud computing certifications.' },
+        'dbt': { name: 'dbt', icon: '🛠️', desc: 'dbt Analytics Engineering modeling & engineering tests.' },
+        'microsoft': { name: 'Microsoft', icon: '🔷', desc: 'Microsoft Azure cloud platform technologies.' }
+    };
 
     // --- DOM Elements ---
     // Views
@@ -20,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dashboard
     const certificationsGrid = document.getElementById('certifications-grid');
     const dashboardLoading = document.getElementById('dashboard-loading');
+    const dashboardTitle = dashboardView.querySelector('.view-header h1');
+    const dashboardSubtitle = dashboardView.querySelector('.view-header .subtitle');
 
     // Quiz View
     const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
@@ -138,27 +148,86 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        certifications.forEach(cert => {
-            const card = document.createElement('div');
-            card.className = 'cert-card';
-            card.innerHTML = `
-                <div class="cert-icon">${cert.icon || '📄'}</div>
-                <h2 class="cert-title">${cert.name}</h2>
-                <p class="cert-desc">${cert.description}</p>
-                <div class="cert-meta">
-                    <span class="cert-q-count">${cert.questionCount} Questions</span>
-                    <button class="primary-btn start-cert-btn" data-id="${cert.id}">Start Practice</button>
-                </div>
-            `;
-            
-            // Add click listener to start button
-            card.querySelector('.start-cert-btn').addEventListener('click', (e) => {
-                const id = e.target.getAttribute('data-id');
-                loadCertificationDetail(id);
-            });
+        // LEVEL 1: Choose Provider
+        if (currentProvider === null) {
+            dashboardTitle.textContent = 'Choose Your Provider';
+            dashboardSubtitle.textContent = 'Select a cloud or tooling platform to view available certification preparation exams.';
 
-            certificationsGrid.appendChild(card);
-        });
+            Object.keys(providers).forEach(providerId => {
+                const provider = providers[providerId];
+                // Count available exams for this provider
+                const count = certifications.filter(c => c.provider === providerId).length;
+
+                const card = document.createElement('div');
+                card.className = 'cert-card';
+                card.innerHTML = `
+                    <div class="cert-icon">${provider.icon}</div>
+                    <h2 class="cert-title">${provider.name}</h2>
+                    <p class="cert-desc">${provider.desc}</p>
+                    <div class="cert-meta">
+                        <span class="cert-q-count">${count} Certification${count === 1 ? '' : 's'}</span>
+                        <button class="primary-btn view-provider-btn" data-provider="${providerId}" ${count === 0 ? 'disabled' : ''}>View Exams</button>
+                    </div>
+                `;
+
+                card.querySelector('.view-provider-btn').addEventListener('click', () => {
+                    currentProvider = providerId;
+                    renderDashboard();
+                });
+
+                certificationsGrid.appendChild(card);
+            });
+        }
+        // LEVEL 2: Choose Exam within Provider
+        else {
+            const providerInfo = providers[currentProvider];
+            dashboardTitle.textContent = `${providerInfo.name} Exams`;
+            dashboardSubtitle.textContent = `Select an exam to begin practicing.`;
+
+            // Back button
+            const backBtn = document.createElement('button');
+            backBtn.className = 'text-btn flex-btn';
+            backBtn.style.gridColumn = '1 / -1';
+            backBtn.style.marginBottom = '20px';
+            backBtn.innerHTML = `<span class="btn-arrow">&larr;</span> Back to Providers`;
+            backBtn.addEventListener('click', () => {
+                currentProvider = null;
+                renderDashboard();
+            });
+            certificationsGrid.appendChild(backBtn);
+
+            const filtered = certifications.filter(c => c.provider === currentProvider);
+
+            if (filtered.length === 0) {
+                const emptyMsg = document.createElement('p');
+                emptyMsg.style.textAlign = 'center';
+                emptyMsg.style.gridColumn = '1 / -1';
+                emptyMsg.textContent = 'No exams available under this category yet.';
+                certificationsGrid.appendChild(emptyMsg);
+                return;
+            }
+
+            filtered.forEach(cert => {
+                const card = document.createElement('div');
+                card.className = 'cert-card';
+                card.innerHTML = `
+                    <div class="cert-icon">${cert.icon || '📄'}</div>
+                    <h2 class="cert-title">${cert.name}</h2>
+                    <p class="cert-desc">${cert.description}</p>
+                    <div class="cert-meta">
+                        <span class="cert-q-count">${cert.questionCount} Questions</span>
+                        <button class="primary-btn start-cert-btn" data-id="${cert.id}">Start Practice</button>
+                    </div>
+                `;
+
+                card.querySelector('.start-cert-btn').addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    loadCertificationDetail(id);
+                });
+
+                certificationsGrid.appendChild(card);
+            });
+        }
     };
 
     // --- Quiz Practice Loop ---
@@ -323,6 +392,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     backToDashboardBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to quit the current practice quiz session? Progress will be lost.')) {
+            currentProvider = null; // Reset back to provider selection
+            renderDashboard();
             switchView('dashboard');
         }
     });
@@ -332,6 +403,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     returnDashboardBtn.addEventListener('click', () => {
+        currentProvider = null; // Reset back to provider selection
+        renderDashboard();
         switchView('dashboard');
     });
 
@@ -339,9 +412,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // If in middle of a quiz, ask first
         if (quizView.classList.contains('active')) {
             if (confirm('Are you sure you want to return to dashboard? Current progress will be lost.')) {
+                currentProvider = null;
+                renderDashboard();
                 switchView('dashboard');
             }
         } else {
+            currentProvider = null;
+            renderDashboard();
             switchView('dashboard');
         }
     });

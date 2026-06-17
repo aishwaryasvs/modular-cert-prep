@@ -58,6 +58,55 @@ body.light-theme {
     --warning: #d97706;
     --warning-bg: rgba(217, 119, 6, 0.06);
     --warning-border: rgba(217, 119, 6, 0.2);
+}
+
+body.cyberpunk-theme {
+    /* Cyberpunk Theme Override */
+    --bg-primary: #0e0518;
+    --bg-secondary: #06020c;
+    --bg-card: rgba(22, 11, 38, 0.65);
+    --bg-active: rgba(255, 0, 127, 0.15);
+    --text-primary: #f8e7ff;
+    --text-secondary: #c5a3d7;
+    --border-color: rgba(255, 0, 127, 0.35);
+    --accent-primary: #ff007f;
+    --accent-hover: #d00068;
+    --accent-glow: rgba(255, 0, 127, 0.3);
+    
+    --success: #00ffff;
+    --success-bg: rgba(0, 255, 255, 0.08);
+    --success-border: rgba(0, 255, 255, 0.3);
+    
+    --error: #ff00ff;
+    --error-bg: rgba(255, 0, 255, 0.08);
+    --error-border: rgba(255, 0, 255, 0.3);
+    
+    --card-shadow: 0 8px 32px 0 rgba(255, 0, 127, 0.15);
+}
+
+body.emerald-theme {
+    /* Emerald Theme Override */
+    --bg-primary: #06110b;
+    --bg-secondary: #030805;
+    --bg-card: rgba(12, 32, 22, 0.65);
+    --bg-active: rgba(16, 185, 129, 0.15);
+    --text-primary: #ecfdf5;
+    --text-secondary: #a7f3d0;
+    --border-color: rgba(16, 185, 129, 0.3);
+    --accent-primary: #10b981;
+    --accent-hover: #059669;
+    --accent-glow: rgba(16, 185, 129, 0.25);
+    
+    --success: #34d399;
+    --success-bg: rgba(52, 211, 153, 0.08);
+    --success-border: rgba(52, 211, 153, 0.3);
+    
+    --error: #fb7185;
+    --error-bg: rgba(251, 113, 133, 0.08);
+    --error-border: rgba(251, 113, 133, 0.3);
+    
+    --card-shadow: 0 8px 32px 0 rgba(16, 185, 129, 0.1);
+}
     
     --card-shadow: 0 8px 30px 0 rgba(148, 163, 184, 0.12);
 }
@@ -164,6 +213,26 @@ body {
     font-weight: 500;
     transition: all 0.2s ease;
     width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: var(--accent-primary);
+    border-radius: 0 4px 4px 0;
+    transition: height 0.2s ease;
+}
+
+.nav-item:hover::before,
+.nav-item.active::before {
+    height: 60%;
 }
 
 .nav-item:hover {
@@ -1158,16 +1227,28 @@ body {
     transform: rotate(180deg);
 }
 
+.review-body-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.review-item.open .review-body-wrapper {
+    grid-template-rows: 1fr;
+}
+
 .review-body {
-    display: none;
-    padding: 24px;
-    border-top: 1px solid var(--border-color);
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 24px;
+    border-top: 1px solid transparent;
     background: rgba(0, 0, 0, 0.1);
-    animation: slideUp 0.2s ease-out;
+    transition: padding 0.3s ease, border-color 0.3s ease;
 }
 
 .review-item.open .review-body {
-    display: block;
+    padding: 24px;
+    border-top: 1px solid var(--border-color);
 }
 
 .review-q-text {
@@ -1909,6 +1990,194 @@ body {
 .modal-actions button {
     flex: 1;
 }
+
+
+/* CLI Command Copy button row */
+.cmd-code-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+}
+
+.cmd-code-row .cmd-code {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+.copy-cmd-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-cmd-btn:hover {
+    color: var(--accent-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Toast Notification overlay and alerts */
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2000;
+}
+
+.toast-alert {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px 24px;
+    border-radius: 8px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 3px solid var(--success);
+}
+
+.toast-alert.visible {
+    transform: translateX(0);
+}
+
+/* Custom Segmented Theme Toggle Switch */
+.theme-toggle-switch {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 3px;
+    position: relative;
+    gap: 2px;
+    align-items: center;
+    backdrop-filter: blur(8px);
+}
+
+.theme-toggle-option {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 2;
+    position: relative;
+    outline: none;
+}
+
+.theme-toggle-option:hover {
+    color: var(--text-primary);
+    transform: scale(1.15);
+}
+
+.theme-toggle-option.active {
+    color: var(--text-primary);
+}
+
+/* Sliding slider indicator */
+.theme-toggle-switch::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-active);
+    border: 1px solid var(--accent-primary);
+    box-shadow: 0 0 8px var(--accent-glow);
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 1;
+}
+
+/* Slide positions based on data-theme-active on body */
+body[data-theme-active="dark"] .theme-toggle-switch::before {
+    transform: translateX(0);
+}
+body[data-theme-active="light"] .theme-toggle-switch::before {
+    transform: translateX(34px);
+}
+body[data-theme-active="cyberpunk"] .theme-toggle-switch::before {
+    transform: translateX(68px);
+}
+body[data-theme-active="emerald"] .theme-toggle-switch::before {
+    transform: translateX(102px);
+}
+
+/* Header Logout Button */
+.header-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-logout-btn:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+    transform: translateY(-1px);
+}
+
+.header-logout-btn:active {
+    transform: translateY(0);
+}
+
+.logout-svg {
+    transition: transform 0.25s ease;
+}
+
+.header-logout-btn:hover .logout-svg {
+    transform: translateX(3px);
+}
+
+@media (max-width: 992px) {
+    .header-logout-btn span {
+        display: none;
+    }
+    .header-logout-btn {
+        padding: 8px;
+        border-radius: 50%;
+    }
+}
+
 
 
 

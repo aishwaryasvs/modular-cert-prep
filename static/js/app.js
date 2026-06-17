@@ -62,8 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
     const sidebarLogoBtn = document.getElementById('sidebar-logo-btn');
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
-    const themeIcon = themeToggleBtn.querySelector('.theme-icon');
+    const themeToggleOptions = document.querySelectorAll('.theme-toggle-option');
 
     // Breadcrumbs & Header
     const headerBreadcrumbs = document.getElementById('header-breadcrumbs');
@@ -170,24 +169,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Theme Management ---
     const initTheme = () => {
         const savedTheme = localStorage.getItem('theme') || 'dark';
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-theme');
-            themeIcon.textContent = '☀️';
-        } else {
-            document.body.classList.remove('light-theme');
-            themeIcon.textContent = '🌙';
+        document.body.classList.remove('light-theme', 'cyberpunk-theme', 'emerald-theme');
+        if (savedTheme !== 'dark') {
+            document.body.classList.add(`${savedTheme}-theme`);
         }
+        document.body.setAttribute('data-theme-active', savedTheme);
+        
+        themeToggleOptions.forEach(opt => {
+            if (opt.getAttribute('data-theme') === savedTheme) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+            }
+        });
     };
 
-    themeToggleBtn.addEventListener('click', () => {
-        const isLight = document.body.classList.toggle('light-theme');
-        if (isLight) {
-            themeIcon.textContent = '☀️';
-            localStorage.setItem('theme', 'light');
-        } else {
-            themeIcon.textContent = '🌙';
-            localStorage.setItem('theme', 'dark');
-        }
+    themeToggleOptions.forEach(opt => {
+        opt.addEventListener('click', () => {
+            const selectedTheme = opt.getAttribute('data-theme');
+            document.body.classList.remove('light-theme', 'cyberpunk-theme', 'emerald-theme');
+            if (selectedTheme !== 'dark') {
+                document.body.classList.add(`${selectedTheme}-theme`);
+            }
+            document.body.setAttribute('data-theme-active', selectedTheme);
+            
+            themeToggleOptions.forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            
+            localStorage.setItem('theme', selectedTheme);
+        });
     });
 
     // --- Mobile Sidebar Toggle ---
@@ -373,9 +383,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 const div = document.createElement('div');
                 div.className = 'cmd-item';
                 div.innerHTML = `
-                    <code class="cmd-code">${escapeHtml(cmd.cmd)}</code>
+                    <div class="cmd-code-row">
+                        <code class="cmd-code">${escapeHtml(cmd.cmd)}</code>
+                        <button class="copy-cmd-btn" title="Copy command">📋</button>
+                    </div>
                     <span class="cmd-desc">${escapeHtml(cmd.desc)}</span>
                 `;
+                
+                div.querySelector('.copy-cmd-btn').addEventListener('click', (e) => {
+                    navigator.clipboard.writeText(cmd.cmd).then(() => {
+                        const btn = e.currentTarget;
+                        const originalText = btn.textContent;
+                        btn.textContent = '✓';
+                        btn.style.color = 'var(--success)';
+                        showToastNotification('Command copied to clipboard!');
+                        setTimeout(() => {
+                            btn.textContent = originalText;
+                            btn.style.color = '';
+                        }, 2000);
+                    });
+                });
+                
                 csCommands.appendChild(div);
             });
         } else {
@@ -1310,15 +1338,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     </span>
                     <span class="toggle-arrow">▼</span>
                 </div>
-                <div class="review-body">
-                    <p class="review-q-text">${escapeHtml(question.question)}</p>
-                    <div class="options-list">
-                        <!-- Filled dynamically below -->
-                    </div>
-                    <div class="feedback-card ${isCorrect ? 'correct-style' : 'incorrect-style'}">
-                        <div class="explanation-content" style="margin: 0;">
-                            <h4>Explanation</h4>
-                            <p>${escapeHtml(question.explanation)}</p>
+                <div class="review-body-wrapper">
+                    <div class="review-body">
+                        <p class="review-q-text">${escapeHtml(question.question)}</p>
+                        <div class="options-list">
+                            <!-- Filled dynamically below -->
+                        </div>
+                        <div class="feedback-card ${isCorrect ? 'correct-style' : 'incorrect-style'}">
+                            <div class="explanation-content" style="margin: 0;">
+                                <h4>Explanation</h4>
+                                <p>${escapeHtml(question.explanation)}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1517,6 +1547,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // --- Toast Notification Helper ---
+    const showToastNotification = (message) => {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-alert';
+        toast.innerHTML = `<span>📋</span> <span>${escapeHtml(message)}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('visible');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.remove('visible');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 3000);
+    };
 
     // --- Init App ---
     initTheme();

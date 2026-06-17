@@ -4,7 +4,7 @@ import json
 # Ensure output directory exists
 os.makedirs('data', exist_ok=True)
 
-# Provider and exam definitions
+# Provider and exam definitions with Cheat Sheets
 certifications_data = [
     {
         "id": "google-associate-cloud-engineer",
@@ -12,6 +12,24 @@ certifications_data = [
         "name": "Google Associate Cloud Engineer (ACE)",
         "description": "Validates your ability to deploy applications, monitor operations, manage enterprise solutions, and configure networks and security on GCP.",
         "icon": "⚡",
+        "cheatsheet": {
+            "summary": "Focuses on the practical setup, deployment, and operation of core GCP infrastructure components (VPC, VMs, Storage, and GKE).",
+            "coreConcepts": [
+                {"name": "IAM Roles & Hierarchy", "desc": "Least privilege principle. User access is managed via Member -> Role -> Resource bindings across Org, Folder, Project, Resource scopes."},
+                {"name": "VPC Global Network", "desc": "Virtual Private Cloud networks are global. Subnets inside are regional. Internal routing works natively between subnets across regions."},
+                {"name": "Managed Instance Groups", "desc": "MIGs use templates to scale compute nodes dynamically based on CPU/load, handling healing and auto-updates."},
+                {"name": "Storage Classes", "desc": "Standard (hot), Nearline (30+ days backup), Coldline (90+ days), Archive (365+ days disaster recovery)."}
+            ],
+            "commands": [
+                {"cmd": "gcloud auth login", "desc": "Authorizes SDK access using Google credentials."},
+                {"cmd": "gcloud compute instances create my-vm --zone=us-central1-a", "desc": "Creates a virtual machine in a specific zone."},
+                {"cmd": "gsutil mb -c nearline gs://my-bucket", "desc": "Creates a Cloud Storage bucket using nearline class."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Static Asset Hosting", "solution": "Store media files in a Cloud Storage bucket, set uniform IAM access, and map a global HTTPS load balancer with Cloud CDN for caching."},
+                {"scenario": "Safe VM Internet Egress", "solution": "Keep VM instances in a private subnet (no external IPs) and route outgoing traffic through Cloud NAT for software updates."}
+            ]
+        },
         "topics": [
             {
                 "topic": "IAM Roles",
@@ -61,6 +79,21 @@ certifications_data = [
         "name": "Google Cloud Digital Leader",
         "description": "Validates foundational knowledge of cloud concepts, Google Cloud products, services, tools, features, and primary use cases.",
         "icon": "☁️",
+        "cheatsheet": {
+            "summary": "Business-level overview of Cloud value propositions, TCO, and matching business problems to Google Cloud products.",
+            "coreConcepts": [
+                {"name": "CapEx vs OpEx", "desc": "Capital Expenditure (buying physical servers upfront) shifts to Operational Expenditure (pay-as-you-go utility pricing)."},
+                {"name": "IaaS vs PaaS vs SaaS", "desc": "Infrastructure (VMs/Disks), Platform (managed runtimes like App Engine/Cloud Run), Software (Google Workspace/SaaS Apps)."},
+                {"name": "Shared Responsibility Model", "desc": "Google manages security OF the cloud (physical centers, hypervisor). Customer manages security IN the cloud (IAM configuration, database queries)."}
+            ],
+            "commands": [
+                {"cmd": "N/A (Conceptual Exam)", "desc": "This exam does not require command-line CLI test configurations, focusing on cloud business logic."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Global Low-Latency Storage", "solution": "Use Cloud Spanner for globally distributed relational database systems requiring strong consistency."},
+                {"scenario": "Modern Data Analytics", "solution": "Aggregate all enterprise business data into BigQuery to execute rapid petabyte-scale SQL queries."}
+            ]
+        },
         "topics": [
             {
                 "topic": "Cloud Concepts",
@@ -115,6 +148,22 @@ certifications_data = [
         "name": "Google Professional Cloud Architect (PCA)",
         "description": "Evaluates your ability to design, develop, and manage robust, secure, scalable, and highly available GCP solutions.",
         "icon": "🏛️",
+        "cheatsheet": {
+            "summary": "Designing enterprise architecture: mapping business objectives to technical requirements, ensuring security, HA, DR, compliance, and cost optimization.",
+            "coreConcepts": [
+                {"name": "DR Strategies (RTO / RPO)", "desc": "Recovery Time Objective (downtime allowed) and Recovery Point Objective (data loss allowed). Multi-region replicates reduce both parameters close to zero."},
+                {"name": "Hybrid Connection SLAs", "desc": "Cloud VPN (routing via public internet, lower cost), Partner Interconnect (private link through provider), Dedicated Interconnect (physical link to Google core, 99.99% SLA availability)."},
+                {"name": "Security & Exfiltration", "desc": "VPC Service Controls locks APIs down to network perimeters. Cloud KMS handles key management."}
+            ],
+            "commands": [
+                {"cmd": "gcloud compute instances migrate ...", "desc": "Manages VM migration steps and configuration."},
+                {"cmd": "gcloud container clusters create ...", "desc": "Configures GKE clusters in enterprise private projects."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Global Web Server Failover", "solution": "Global HTTP(S) Load Balancer distributing connections to VMs in MIGs in us-east1 and europe-west1, backed by Cloud Spanner multi-region."},
+                {"scenario": "Enterprise Audit Trails", "solution": "Collect system logs in Cloud Logging, filter out administrative logs, and export via Log Sink to a BigQuery dataset for security audit analysis."}
+            ]
+        },
         "topics": [
             {
                 "topic": "Designing for High Availability",
@@ -179,6 +228,22 @@ certifications_data = [
         "name": "Google Professional Data Engineer (PDE)",
         "description": "Assesses skills in designing, building, operationalizing, and securing data processing systems on Google Cloud.",
         "icon": "📊",
+        "cheatsheet": {
+            "summary": "Building data collection and processing architectures: Pub/Sub ingestion, Dataflow streaming, BigQuery storage, Bigtable NoSQL, and Cloud Composer orchestration.",
+            "coreConcepts": [
+                {"name": "BigQuery Partitioning & Clustering", "desc": "Partitioning divides data by date/time (saves scan costs). Clustering sorts data by key columns inside partitions (speeds up filters/groups)."},
+                {"name": "Cloud Bigtable Keys", "desc": "NoSQL wide-column database. Row keys must be designed sequentially to prevent hotspotting (e.g. sensor_id#timestamp instead of timestamp first)."},
+                {"name": "Dataflow Windowing", "desc": "Tumbling (fixed non-overlapping), Hopping (overlapping time frames), Session (inactivity gap-based)."}
+            ],
+            "commands": [
+                {"cmd": "bq query --use_legacy_sql=false 'SELECT ...'", "desc": "Runs a SQL query against BigQuery using standard SQL compiler."},
+                {"cmd": "gcloud composer environments create ...", "desc": "Initializes a managed Apache Airflow workflow environment."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Real-time Ad Ingestion Pipeline", "solution": "Ingest user clicks via Pub/Sub, stream process using Cloud Dataflow (sliding window aggregations), and save outputs in BigQuery for dashboard analysis."},
+                {"scenario": "IoT Event Hub", "solution": "Stream millisecond sensor logs to Cloud Pub/Sub, write to Cloud Bigtable using a optimized sensor#timestamp row key for time-series lookup."}
+            ]
+        },
         "topics": [
             {
                 "topic": "BigQuery Optimization",
@@ -238,6 +303,22 @@ certifications_data = [
         "name": "Google Professional Cloud Developer (PCD)",
         "description": "Tests your proficiency in designing, building, testing, and deploying cloud-native applications on Google Cloud.",
         "icon": "💻",
+        "cheatsheet": {
+            "summary": "Focuses on cloud-native application architectures, API design, CI/CD with Cloud Build, secrets management, testing, and monitoring.",
+            "coreConcepts": [
+                {"name": "Serverless Scaling", "desc": "Cloud Run scales containers automatically down to zero. Cold startup times are controlled by setting minimum instances configurations."},
+                {"name": "CI/CD Pipeline steps", "desc": "Source code (GitHub/Cloud Source) -> Cloud Build (Docker compile) -> Artifact Registry (Container storing) -> Cloud Deploy (GKE/Cloud Run rollouts)."},
+                {"name": "Tracing and Profiling", "desc": "Cloud Trace (request latency paths), Cloud Profiler (CPU/Memory optimization in code), Cloud Logging (debug outputs)."}
+            ],
+            "commands": [
+                {"cmd": "gcloud builds submit --config=cloudbuild.yaml", "desc": "Triggers a Cloud Build compilation job using a local workspace."},
+                {"cmd": "gcloud secrets create db-pwd --data-file=password.txt", "desc": "Registers a new secure environment key in Secret Manager."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Secure API Secrets", "solution": "Store API tokens in Secret Manager, grant the compute service account Secret Manager Accessor, and inject secrets as environment variables in Cloud Run at startup."},
+                {"scenario": "Low-Latency Profile Syncing", "solution": "Cache relational database query profiles in Cloud Memorystore (Redis) to speed up microservice response times."}
+            ]
+        },
         "topics": [
             {
                 "topic": "CI/CD Pipelines",
@@ -258,7 +339,7 @@ certifications_data = [
                 "q": "Your application needs to securely store API keys and database credentials. You must prevent hardcoding secrets in application source files. Which service should you integrate?",
                 "opts": ["Secret Manager", "Cloud KMS", "Identity-Aware Proxy", "Artifact Registry"],
                 "ans": 0,
-                "exp": "Secret Manager is a secure, convenient storage system for API keys, passwords, certificates, and other sensitive data."
+                "exp": "Secret Manager is a secure, convenient storage system for API keys, passwords, credentials, and other sensitive data."
             },
             {
                 "topic": "App Engine Configurations",
@@ -282,6 +363,22 @@ certifications_data = [
         "name": "Google Professional Cloud Security Engineer",
         "description": "Tests your ability to design, develop, and manage a secure infrastructure using Google Cloud security technologies.",
         "icon": "🛡️",
+        "cheatsheet": {
+            "summary": "Implementing security perimeters: identity management, encryption, network security, regulatory compliance, and security monitoring.",
+            "coreConcepts": [
+                {"name": "Encryption at Rest", "desc": "Google-Managed (GMEK, default), Customer-Managed (CMEK, keys inside Cloud KMS), Customer-Supplied (CSEK, keys stored on-premises outside GCP)."},
+                {"name": "VPC Service Controls", "desc": "Mitigates data exfiltration risk by blocking service API queries originating from outside defined networks/perimeters."},
+                {"name": "Cloud DLP (Sensitive Data Protection)", "desc": "Uses infoType detectors to automatically identify, classify, mask, or redact PII data."}
+            ],
+            "commands": [
+                {"cmd": "gcloud kms keys create ...", "desc": "Initializes custom encryption keys inside a Cloud KMS keyring."},
+                {"cmd": "gcloud iam roles create ...", "desc": "Creates custom roles to enforce least privilege access."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Preventing Public Storage Access", "solution": "Enable Organization Policy constraint 'Restrict Public IP Access' and use 'Uniform Bucket-Level Access' on Cloud Storage buckets."},
+                {"scenario": "Restricting Admin Console access", "solution": "Secure internal VM administration by enabling Identity-Aware Proxy (IAP) tunnels for SSH/RDP without exposing public VMs."}
+            ]
+        },
         "topics": [
             {
                 "topic": "Data Encryption",
@@ -346,6 +443,22 @@ certifications_data = [
         "name": "Google Professional Cloud Network Engineer",
         "description": "Validates your expertise in designing, planning, and managing Google Cloud network architectures.",
         "icon": "🌐",
+        "cheatsheet": {
+            "summary": "Network architecture design: configuring Shared VPC networks, routing, load balancers, DNS, and hybrid connectivity links.",
+            "coreConcepts": [
+                {"name": "Shared VPC", "desc": "Centralizes subnets and firewalls inside a single host project, sharing subnets to service projects in the organization resource tree."},
+                {"name": "Cloud Router & BGP", "desc": "Exchanges dynamic routes via Border Gateway Protocol between Google Cloud VPC networks and local physical routers."},
+                {"name": "Global Load Balancing", "desc": "HTTP(S) Load Balancer acts as reverse proxy, routing user traffic via Google's edge locations. Backed by Cloud CDN for static files."}
+            ],
+            "commands": [
+                {"cmd": "gcloud compute networks subnets create ...", "desc": "Creates regional subnets within a global VPC network."},
+                {"cmd": "gcloud compute routers create ...", "desc": "Registers a virtual router to coordinate BGP sessions."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Safe Database Connectivity", "solution": "Set up Private Google Access on subnets to allow VMs without external public IPs to communicate with GCP API services like BigQuery and Cloud Storage."},
+                {"scenario": "Network Isolation", "solution": "Configure VPC Network Peering to connect two separate VPC networks internally using private IP spaces without public internet routing."}
+            ]
+        },
         "topics": [
             {
                 "topic": "Hybrid Connectivity",
@@ -395,6 +508,22 @@ certifications_data = [
         "name": "Google Professional Cloud DevOps Engineer",
         "description": "Evaluates proficiency in using Google Cloud services to build and operationalize software delivery pipelines and manage service reliability.",
         "icon": "♾️",
+        "cheatsheet": {
+            "summary": "Operationalizing reliable systems: SRE foundations (SLI/SLO/Error Budgets), logging strategies, CI/CD deployment logic, and monitoring systems.",
+            "coreConcepts": [
+                {"name": "SLI vs SLO vs SLA", "desc": "Service Level Indicator (measurable latency/error rate), Service Level Objective (internal target, e.g., 99.9% uptime), Service Level Agreement (contractual commitment to users)."},
+                {"name": "Error Budgets", "desc": "100% - SLO. Represents the allowable downtime or error rate. Used to balance deployment velocity against service stability."},
+                {"name": "Deployment Strategies", "desc": "Canary (tests 1% of users), Blue-Green (switches 100% traffic to duplicate environment), Rolling (upgrades nodes sequentially)."}
+            ],
+            "commands": [
+                {"cmd": "terraform init && terraform apply", "desc": "Initializes and deploys infrastructure templates declaratively."},
+                {"cmd": "gcloud logging read 'severity>=ERROR'", "desc": "Queries log messages filtering out non-error entries."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Proactive Alerting", "solution": "Set up a Cloud Monitoring alerting policy tracking SLO error budget burn rates, triggering alerts before the budget is fully depleted."},
+                {"scenario": "Declarative Cloud Setups", "solution": "Define VPCs, subnets, and MIGs in Terraform templates, executing rollouts via Cloud Build hooks upon merging commits."}
+            ]
+        },
         "topics": [
             {
                 "topic": "Site Reliability Engineering (SRE)",
@@ -454,6 +583,22 @@ certifications_data = [
         "name": "Google Professional Machine Learning Engineer",
         "description": "Tests your ability to design, build, and productionize ML models on GCP using Vertex AI.",
         "icon": "🧠",
+        "cheatsheet": {
+            "summary": "Productionizing machine learning: model design, building training pipelines in Vertex AI, monitoring parameters, and model drift tracking.",
+            "coreConcepts": [
+                {"name": "Vertex AI Pipelines", "desc": "Serverless orchestration tool built on Kubeflow Pipelines or TFX to design reproducible pipelines for ML runs."},
+                {"name": "Feature Store", "desc": "Centralized repository to share, store, and serve ML features dynamically, preventing training-serving skew."},
+                {"name": "Data Drift vs Concept Drift", "desc": "Data drift (input data statistical properties change over time). Concept drift (relationship between input data and target labels changes)."}
+            ],
+            "commands": [
+                {"cmd": "gcloud ai models upload ...", "desc": "Registers a new trained model configuration in the Vertex AI Model Registry."},
+                {"cmd": "gcloud ai endpoints predict ...", "desc": "Submits a real-time prediction request to a hosted ML endpoint."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Preventing Training-Serving Skew", "solution": "Integrate Vertex AI Feature Store to compute feature values once and distribute them consistently to training and online prediction engines."},
+                {"scenario": "ML Pipeline Automation", "solution": "Set up a Cloud Pub/Sub topic triggered by new files in Cloud Storage, launching a Vertex AI Pipeline run via Cloud Functions."}
+            ]
+        },
         "topics": [
             {
                 "topic": "Vertex AI Pipelines",
@@ -498,6 +643,23 @@ certifications_data = [
         "name": "dbt Certified Developer",
         "description": "Validates expertise in analytics engineering workflows, dbt compilation, modeling, testing, documentation, and deployment.",
         "icon": "🛠️",
+        "cheatsheet": {
+            "summary": "Core transformation developer guidelines: writing modular SQL models, leveraging Jinja variables, testing, and managing lineage docs.",
+            "coreConcepts": [
+                {"name": "Modular SQL", "desc": "Write SELECT models using the ref() function instead of hardcoding database table references, enabling automated compilation of dependencies."},
+                {"name": "Materialization Profiles", "desc": "View (default, virtual lookup), Table (physical tables, faster queries), Incremental (appends/merges new rows), Ephemeral (common table expressions)."},
+                {"name": "Data Quality Testing", "desc": "Ensure integrity using YAML schema assertions (`unique`, `not_null`, `accepted_values`, `relationships`)."}
+            ],
+            "commands": [
+                {"cmd": "dbt run", "desc": "Compiles dbt SQL models and executes them on your data warehouse."},
+                {"cmd": "dbt test", "desc": "Runs all assertions and validation tests defined in schema YAML files."},
+                {"cmd": "dbt docs generate && dbt docs serve", "desc": "Generates documentation and runs a local server to view lineage graphs."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Safe Refactoring", "solution": "Create modular staging models representing clean sources, then build downstream dimension/fact models referencing the staging models using ref()."},
+                {"scenario": "Handling Hardcoded Codes", "solution": "Declare config parameters or static values inside dbt variables (`var('my_variable')`) rather than hardcoding them in model SQL."}
+            ]
+        },
         "topics": [
             {
                 "topic": "dbt Core Concepts",
@@ -552,6 +714,23 @@ certifications_data = [
         "name": "dbt Certified Analytics Engineer",
         "description": "Tests advanced competency in structuring warehouses, performance optimization, package management, custom macros, and advanced lineage.",
         "icon": "⚙️",
+        "cheatsheet": {
+            "summary": "Advanced dbt implementation: writing reusable macro modules, scaling incremental models, and managing dependencies.",
+            "coreConcepts": [
+                {"name": "Jinja Macros & SQL pivot", "desc": "Macros act as SQL functions to avoid repeating commands (e.g. pivoting columns or managing standard timezone formatting)."},
+                {"name": "Incremental Strategies", "desc": "Merge (updates matched keys, inserts others), Append (inserts all rows), Delete+Insert (deletes dates matching partition and overwrites), Insert Overwrite."},
+                {"name": "dbt packages (packages.yml)", "desc": "Enables sharing code modules (e.g. using `dbt_utils` or `codegen` packages)."}
+            ],
+            "commands": [
+                {"cmd": "dbt deps", "desc": "Downloads and installs package dependencies declared in packages.yml."},
+                {"cmd": "dbt source freshness", "desc": "Queries raw tables to verify if recent data has been loaded based on configured SLA thresholds."},
+                {"cmd": "dbt run --select state:modified --state path/to/artifacts", "desc": "Runs only the models that have changed since the last compiled state."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "High-Volume Incremental run", "solution": "Configure model materialization as incremental, define a unique key, and filter incoming data using the `is_incremental()` macro filter."},
+                {"scenario": "Monitoring Pipeline Freshness", "solution": "Add freshness parameters to source yml configurations, and schedule `dbt source freshness` checks in the CI/CD pipeline."}
+            ]
+        },
         "topics": [
             {
                 "topic": "Package Management",
@@ -601,6 +780,22 @@ certifications_data = [
         "name": "AWS Certified Cloud Practitioner",
         "description": "Provides a high-level overview of AWS cloud concepts, security, technology, architecture, and billing models.",
         "icon": "☁️",
+        "cheatsheet": {
+            "summary": "High-level overview of AWS cloud services, security policies, billing, and the Well-Architected Framework design rules.",
+            "coreConcepts": [
+                {"name": "AWS EC2", "desc": "Elastic Compute Cloud. Scalable virtual servers in the AWS Cloud."},
+                {"name": "Security Groups vs NACLs", "desc": "Security Groups act as firewalls for EC2 instances (stateful). NACLs act as firewalls for subnets (stateless)."},
+                {"name": "S3 (Simple Storage Service)", "desc": "Scalable object storage service. Ideal for unstructured files like media, logs, and HTML."}
+            ],
+            "commands": [
+                {"cmd": "aws s3 sync local_folder/ s3://my-bucket/", "desc": "Uploads and synchronizes a local directory with an S3 bucket."},
+                {"cmd": "aws ec2 run-instances --image-id ami-xxxxxx ...", "desc": "Creates a new EC2 VM instance."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Global File Delivery", "solution": "Store files in S3 and cache them globally at Edge locations using Amazon CloudFront CDN."},
+                {"scenario": "Scalable Database", "solution": "Deploy relational SQL schemas on Amazon RDS with Multi-AZ replication for automated failover."}
+            ]
+        },
         "topics": [
             {
                 "topic": "AWS Cloud Basics",
@@ -645,6 +840,22 @@ certifications_data = [
         "name": "Microsoft Azure Fundamentals (AZ-900)",
         "description": "Covers foundational knowledge of Azure cloud services, security, privacy, compliance, trust, and pricing models.",
         "icon": "🔷",
+        "cheatsheet": {
+            "summary": "Introductory guide to Microsoft Azure: subscriptions, resource groups, storage options, and core virtualized networking services.",
+            "coreConcepts": [
+                {"name": "Azure Subscriptions", "desc": "A logical unit of Azure services linked to an Azure account for billing and security access controls."},
+                {"name": "Resource Groups", "desc": "Logical containers containing related Azure resources sharing lifecycles and administrative access."},
+                {"name": "Azure Blob Storage", "desc": "Unstructured object storage optimized for serving images, documents, and data backups."}
+            ],
+            "commands": [
+                {"cmd": "az group create --name my-rg --location eastus", "desc": "Creates a new administrative resource group in the East US region."},
+                {"cmd": "az vm create --resource-group my-rg --name my-vm ...", "desc": "Deploys a virtual machine instance."}
+            ],
+            "architecturalPatterns": [
+                {"scenario": "Private Office Connectivity", "solution": "Set up Azure ExpressRoute to bypass the public internet and connect on-premises data centers directly to Azure VNets."},
+                {"scenario": "Automating Compute Scale", "solution": "Deploy Azure Virtual Machine Scale Sets (VMSS) to dynamically spin up identical VM copies in response to traffic load."}
+            ]
+        },
         "topics": [
             {
                 "topic": "Azure Cloud Portal",
@@ -695,6 +906,7 @@ def generate_questions():
         name = cert["name"]
         desc = cert["description"]
         icon = cert["icon"]
+        cheatsheet = cert["cheatsheet"]
         topics = cert["topics"]
         
         generated_questions = []
@@ -722,8 +934,6 @@ def generate_questions():
             
             # Dynamically replace generic context in base question with scenario context
             q_text = base_q_text = topic_obj["q"]
-            
-            # Append a small prefix indicating the subset context
             q_text = f"[{topic_obj['topic']} Scenario {scenario_num}] In your company's {project_name} environment: {base_q_text}"
             
             options = topic_obj["opts"]
@@ -745,6 +955,7 @@ def generate_questions():
             "name": name,
             "description": desc,
             "icon": icon,
+            "cheatsheet": cheatsheet,
             "questions": generated_questions
         })
         
@@ -755,4 +966,4 @@ data = generate_questions()
 with open('data/questions.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, indent=2)
 
-print(f"Success! Generated data/questions.json with {len(data['certifications'])} certifications and 50 questions each (total {50 * len(data['certifications'])} questions)!")
+print(f"Success! Generated data/questions.json with {len(data['certifications'])} certifications, cheatsheets, and 50 questions each!")

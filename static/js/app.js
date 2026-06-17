@@ -71,9 +71,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dashboard
     const certificationsGrid = document.getElementById('certifications-grid');
+    const cheatsheetsGrid = document.getElementById('cheatsheets-grid');
+    const tabPracticeExams = document.getElementById('tab-practice-exams');
+    const tabCheatsheets = document.getElementById('tab-cheatsheets');
     const dashboardLoading = document.getElementById('dashboard-loading');
     const dashboardTitle = document.getElementById('dashboard-title');
     const dashboardSubtitle = document.getElementById('dashboard-subtitle');
+
+    // Cheatsheet View
+    const cheatsheetView = document.getElementById('cheatsheet-view');
+    const cheatsheetBackBtn = document.getElementById('cheatsheet-back-btn');
+    const cheatsheetTitle = document.getElementById('cheatsheet-title');
+    const cheatsheetDesc = document.getElementById('cheatsheet-desc');
+    const csSummaryText = document.getElementById('cs-summary-text');
+    const csCoreServices = document.getElementById('cs-core-services');
+    const csCommands = document.getElementById('cs-commands');
+    const csPatterns = document.getElementById('cs-patterns');
 
     // Config View
     const configBackBtn = document.getElementById('config-back-btn');
@@ -165,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- View Router ---
     const switchView = (viewName) => {
-        const views = [dashboardView, quizConfigView, quizView, scorecardView];
+        const views = [dashboardView, quizConfigView, quizView, cheatsheetView, scorecardView];
         views.forEach(view => {
             view.classList.remove('active');
         });
@@ -180,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (viewName === 'dashboard') dashboardView.classList.add('active');
             if (viewName === 'quiz-config') quizConfigView.classList.add('active');
             if (viewName === 'quiz') quizView.classList.add('active');
+            if (viewName === 'cheatsheet') cheatsheetView.classList.add('active');
             if (viewName === 'scorecard') scorecardView.classList.add('active');
         }, 150);
     };
@@ -273,25 +287,128 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const loadCheatsheetDetail = async (certId) => {
+        try {
+            const response = await fetch(`/api/certifications/${certId}`);
+            if (!response.ok) throw new Error('Failed to load certification details');
+            
+            currentCert = await response.json();
+            showCheatsheet();
+        } catch (error) {
+            console.error('Error fetching cheatsheet details:', error);
+            alert('Could not fetch cheat sheet details. Please try again.');
+        }
+    };
+
+    const showCheatsheet = () => {
+        if (!currentCert || !currentCert.cheatsheet) return;
+
+        headerBreadcrumbs.textContent = `${providers[currentProvider].name} / ${currentCert.name} / Cheat Sheet`;
+        
+        cheatsheetTitle.textContent = `${currentCert.name} Cheat Sheet`;
+        cheatsheetDesc.textContent = `Essential study guide covering core concepts, CLI commands, and architectural patterns.`;
+        
+        // Summary
+        csSummaryText.textContent = currentCert.cheatsheet.summary || "No overview summary provided.";
+
+        // Core Concepts & Services
+        csCoreServices.innerHTML = '';
+        if (currentCert.cheatsheet.coreConcepts && currentCert.cheatsheet.coreConcepts.length > 0) {
+            currentCert.cheatsheet.coreConcepts.forEach(concept => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <strong>${escapeHtml(concept.name)}</strong>
+                    <span>${escapeHtml(concept.desc)}</span>
+                `;
+                csCoreServices.appendChild(li);
+            });
+        } else {
+            csCoreServices.innerHTML = '<li>No core concepts listed.</li>';
+        }
+
+        // CLI Commands
+        csCommands.innerHTML = '';
+        if (currentCert.cheatsheet.commands && currentCert.cheatsheet.commands.length > 0) {
+            currentCert.cheatsheet.commands.forEach(cmd => {
+                const div = document.createElement('div');
+                div.className = 'cmd-item';
+                div.innerHTML = `
+                    <code class="cmd-code">${escapeHtml(cmd.cmd)}</code>
+                    <span class="cmd-desc">${escapeHtml(cmd.desc)}</span>
+                `;
+                csCommands.appendChild(div);
+            });
+        } else {
+            csCommands.innerHTML = '<div class="cmd-item"><span class="cmd-desc">No CLI commands configured for this exam.</span></div>';
+        }
+
+        // Architectural Patterns
+        csPatterns.innerHTML = '';
+        if (currentCert.cheatsheet.architecturalPatterns && currentCert.cheatsheet.architecturalPatterns.length > 0) {
+            currentCert.cheatsheet.architecturalPatterns.forEach(pattern => {
+                const div = document.createElement('div');
+                div.className = 'pattern-item';
+                div.innerHTML = `
+                    <div class="pattern-scenario">${escapeHtml(pattern.scenario)}</div>
+                    <div class="pattern-solution">${escapeHtml(pattern.solution)}</div>
+                `;
+                csPatterns.appendChild(div);
+            });
+        } else {
+            csPatterns.innerHTML = '<div class="pattern-item"><div class="pattern-solution">No design patterns configured for this exam.</div></div>';
+        }
+
+        switchView('cheatsheet');
+    };
+
+    cheatsheetBackBtn.addEventListener('click', () => {
+        switchView('dashboard');
+        renderDashboard();
+    });
+
+    // Tab switching handlers
+    tabPracticeExams.addEventListener('click', () => {
+        tabPracticeExams.classList.add('active');
+        tabCheatsheets.classList.remove('active');
+        certificationsGrid.classList.remove('hidden');
+        cheatsheetsGrid.classList.add('hidden');
+    });
+
+    tabCheatsheets.addEventListener('click', () => {
+        tabCheatsheets.classList.add('active');
+        tabPracticeExams.classList.remove('active');
+        cheatsheetsGrid.classList.remove('hidden');
+        certificationsGrid.classList.add('hidden');
+    });
+
     // --- Render Dashboard (Exams under selected provider) ---
     const renderDashboard = () => {
+        // Reset tab state to default (Practice Exams active)
+        tabPracticeExams.classList.add('active');
+        tabCheatsheets.classList.remove('active');
+        certificationsGrid.classList.remove('hidden');
+        cheatsheetsGrid.classList.add('hidden');
+
         certificationsGrid.innerHTML = '';
+        cheatsheetsGrid.innerHTML = '';
         headerBreadcrumbs.textContent = providers[currentProvider] ? providers[currentProvider].name : 'Dashboard';
 
         const filtered = certifications.filter(c => c.provider === currentProvider);
 
         if (filtered.length === 0) {
             certificationsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No certifications available under this provider yet.</p>';
+            cheatsheetsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No study cheat sheets available under this provider yet.</p>';
             return;
         }
 
         dashboardTitle.textContent = `${providers[currentProvider].name} Certifications`;
-        dashboardSubtitle.textContent = `Select an exam category to configure your practice or exam simulation session.`;
+        dashboardSubtitle.textContent = `Select an option below to study cheat sheets or start interactive practice test sessions.`;
 
         filtered.forEach(cert => {
-            const card = document.createElement('div');
-            card.className = 'cert-card';
-            card.innerHTML = `
+            // 1. Render Practice Exam Card
+            const practiceCard = document.createElement('div');
+            practiceCard.className = 'cert-card';
+            practiceCard.innerHTML = `
                 <div class="cert-icon">${cert.icon || '📄'}</div>
                 <h2 class="cert-title">${cert.name}</h2>
                 <p class="cert-desc">${cert.description}</p>
@@ -301,12 +418,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             
-            card.querySelector('.start-cert-btn').addEventListener('click', (e) => {
+            practiceCard.querySelector('.start-cert-btn').addEventListener('click', (e) => {
                 const id = e.target.getAttribute('data-id');
                 loadCertificationDetail(id);
             });
 
-            certificationsGrid.appendChild(card);
+            certificationsGrid.appendChild(practiceCard);
+
+            // 2. Render Cheatsheet Card
+            const csCard = document.createElement('div');
+            csCard.className = 'cert-card';
+            csCard.innerHTML = `
+                <div class="cert-icon">${cert.icon || '📄'}</div>
+                <h2 class="cert-title">${cert.name} Guide</h2>
+                <p class="cert-desc">Core concepts, common CLI command structures, and design solutions for the ${cert.name} exam.</p>
+                <div class="cert-meta">
+                    <span class="cert-q-count">Study Cheat Sheet</span>
+                    <button class="primary-btn view-cs-btn" data-id="${cert.id}">View Cheat Sheet</button>
+                </div>
+            `;
+            
+            csCard.querySelector('.view-cs-btn').addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                loadCheatsheetDetail(id);
+            });
+
+            cheatsheetsGrid.appendChild(csCard);
         });
     };
 

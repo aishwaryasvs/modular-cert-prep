@@ -57,18 +57,30 @@
             <!-- Main Panel -->
             <main class="app-main">
                 
-                <!-- View 1: Dashboard (Exams List under selected Provider) -->
+                <!-- View 1: Dashboard (Exams List & Cheatsheets List) -->
                 <section id="dashboard-view" class="view-section active">
                     <div class="view-header">
                         <h1 id="dashboard-title">Choose Your Certification</h1>
                         <p class="subtitle" id="dashboard-subtitle">Select an exam category to start practicing with detailed feedback.</p>
+                        
+                        <!-- Tabs separating Practice Tests and Cheatsheets -->
+                        <div class="dashboard-tabs">
+                            <button class="tab-btn active" id="tab-practice-exams">📝 Practice Exams</button>
+                            <button class="tab-btn" id="tab-cheatsheets">📑 Study Cheat Sheets</button>
+                        </div>
                     </div>
-                    <!-- Dynamic grid of certifications -->
+                    
+                    <!-- Dynamic grid of certifications (Practice Tests) -->
                     <div id="certifications-grid" class="certs-grid">
                         <div class="loading-spinner" id="dashboard-loading">
                             <div class="spinner"></div>
                             <p>Loading certifications...</p>
                         </div>
+                    </div>
+
+                    <!-- Dynamic grid of Cheatsheets -->
+                    <div id="cheatsheets-grid" class="certs-grid hidden">
+                        <!-- Cheatsheet cards populated dynamically -->
                     </div>
                 </section>
 
@@ -215,7 +227,52 @@
                     </div>
                 </section>
 
-                <!-- View 4: Scorecard Summary & detailed reviews -->
+                <!-- View 4: Detailed Cheat Sheet Study View -->
+                <section id="cheatsheet-view" class="view-section">
+                    <div class="cheatsheet-container">
+                        <div class="cheatsheet-header">
+                            <button id="cheatsheet-back-btn" class="text-btn flex-btn">
+                                <span class="btn-arrow">&larr;</span> Back to Dashboard
+                            </button>
+                            <h1 id="cheatsheet-title">Cheat Sheet</h1>
+                            <p id="cheatsheet-desc" class="subtitle">Quick reference study guide for core services, CLI commands, and architectural patterns.</p>
+                        </div>
+
+                        <!-- Summary Card -->
+                        <div class="cheatsheet-card summary-section" style="margin-bottom: 24px;">
+                            <h2>Exam Overview</h2>
+                            <p id="cs-summary-text">Overview text goes here.</p>
+                        </div>
+
+                        <div class="cheatsheet-grid">
+                            <!-- Core Concepts & Services -->
+                            <div class="cheatsheet-card">
+                                <h2>Core Concepts & Services</h2>
+                                <ul id="cs-core-services" class="cs-list">
+                                    <!-- Injected -->
+                                </ul>
+                            </div>
+
+                            <!-- CLI Commands -->
+                            <div class="cheatsheet-card">
+                                <h2>Common CLI Commands</h2>
+                                <div id="cs-commands" class="cs-commands-list">
+                                    <!-- Injected -->
+                                </div>
+                            </div>
+
+                            <!-- Key Architectural Patterns -->
+                            <div class="cheatsheet-card wide-card">
+                                <h2>Key Architectural & Design Patterns</h2>
+                                <div id="cs-patterns" class="cs-patterns-list">
+                                    <!-- Injected -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View 5: Scorecard Summary & detailed reviews -->
                 <section id="scorecard-view" class="view-section">
                     <div class="scorecard-container">
                         <!-- Score overview card -->
@@ -241,7 +298,7 @@
                             <!-- Actions -->
                             <div class="scorecard-actions">
                                 <button id="retry-quiz-btn" class="primary-btn">Retry Session</button>
-                                <button id="return-dashboard-btn" class="primary-btn secondary-style">Back to Exams</button>
+                                <button id="return-dashboard-btn" class="primary-btn secondary-style">Back to Dashboard</button>
                             </div>
                         </div>
 

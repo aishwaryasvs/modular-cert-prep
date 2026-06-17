@@ -10,10 +10,11 @@ The app features a premium glassmorphic layout with persistent sidebar menus, in
 
 - **Persistent Sidebar Navigation**: Quickly navigate between top-level providers (**Google Cloud**, **AWS**, **dbt**, and **Microsoft**) using a modern left-side panel (responsive drawer on mobile) featuring SVGs of their actual logos.
 - **Difficulty Tier Selector**: Customise your study session by choosing between **Easy** (foundational concepts), **Medium** (practical scenarios), or **Hard** (architectural troubleshooting) questions.
-- **Dual Study Modes**:
-  - **Practice Mode**: An untimed session showing immediate correct/incorrect feedback with comprehensive educational explanations after every question.
-  - **Exam Simulation**: A timed, realistic test environment. It shuffles and limits the pool to 20 questions with a 20-minute timer. Features a question navigation grid map and "Flag for Review" tools, saving results for the end.
-- **Study Cheat Sheets**: A dedicated dashboard tab for each provider offering study cheat sheets outlining core concepts, common CLI command structures, and architectural solutions for every single exam.
+- **Four Study Modes & Dashboard Tabs**:
+  - **📝 Practice Exams**: Customise your study session by choosing between **Easy**, **Medium**, or **Hard** levels. Select between untimed *Practice Mode* (instant answers and explanations) or timed *Exam Simulation* (20-question, 20-minute simulated tests with dynamic navigation and review flags).
+  - **📑 Study Cheat Sheets**: Outline core concepts, common CLI command structures, and architectural patterns.
+  - **🎴 Study Flashcards**: Active-recall Q&A flashcards covering service definitions, limits, commands, and common gotchas.
+  - **📋 Exam Guide Checklist**: Flip-based domain-by-domain breakdowns of the official exam guide with a skills checklist.
 - **Interactive Question Navigation Grid**: A visual map displaying answered, current, and flagged questions, allowing users to jump directly to any question during simulations.
 - **Detailed Scorecard Review**: After completion, view your percentage score, a color-coded success badge, and an expandable accordion breakdown of every question to inspect your choices, correct options, and detailed explanations.
 - **High-Quality Question Pool**: Includes at least **50 realistic questions** per certification (**14 certifications, 700 questions total** in the compiled database), tagged by difficulty.

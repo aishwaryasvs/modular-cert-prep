@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Active flashcard state
     let currentFlashcards = [];
     let currentFlashcardIndex = 0;
+    let flashcardViewMode = 'checklist'; // 'checklist' or 'study'
 
     // Providers registry
     const providers = {
@@ -77,9 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const certificationsGrid = document.getElementById('certifications-grid');
     const cheatsheetsGrid = document.getElementById('cheatsheets-grid');
     const flashcardsGrid = document.getElementById('flashcards-grid');
+    const checklistGrid = document.getElementById('checklist-grid');
     const tabPracticeExams = document.getElementById('tab-practice-exams');
     const tabCheatsheets = document.getElementById('tab-cheatsheets');
     const tabFlashcards = document.getElementById('tab-flashcards');
+    const tabChecklist = document.getElementById('tab-checklist');
     const dashboardLoading = document.getElementById('dashboard-loading');
     const dashboardTitle = document.getElementById('dashboard-title');
     const dashboardSubtitle = document.getElementById('dashboard-subtitle');
@@ -394,10 +397,27 @@ document.addEventListener('DOMContentLoaded', () => {
             currentCert = await response.json();
             currentFlashcards = currentCert.flashcards || [];
             currentFlashcardIndex = 0;
+            flashcardViewMode = 'checklist';
             showFlashcards();
         } catch (error) {
             console.error('Error fetching flashcards:', error);
             alert('Could not fetch flashcard details. Please try again.');
+        }
+    };
+
+    const loadStudyFlashcardDetail = async (certId) => {
+        try {
+            const response = await fetch(`/api/certifications/${certId}`);
+            if (!response.ok) throw new Error('Failed to load certification details');
+            
+            currentCert = await response.json();
+            currentFlashcards = currentCert.study_flashcards || [];
+            currentFlashcardIndex = 0;
+            flashcardViewMode = 'study';
+            showFlashcards();
+        } catch (error) {
+            console.error('Error fetching study flashcards:', error);
+            alert('Could not fetch study flashcard details. Please try again.');
         }
     };
 
@@ -407,8 +427,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        headerBreadcrumbs.textContent = `${providers[currentProvider].name} / ${currentCert.name} / Flashcards`;
+        const isStudy = flashcardViewMode === 'study';
+        const viewLabel = isStudy ? 'Study Flashcards' : 'Exam Guide Checklist';
+        headerBreadcrumbs.textContent = `${providers[currentProvider].name} / ${currentCert.name} / ${viewLabel}`;
         
+        // Update title
+        const flashcardTitleHeader = document.getElementById('flashcard-title');
+        const flashcardSubtitle = document.getElementById('flashcard-subtitle');
+        if (flashcardTitleHeader) {
+            flashcardTitleHeader.textContent = isStudy ? `${currentCert.name} Study Flashcards` : `${currentCert.name} Exam Guide Checklist`;
+        }
+        if (flashcardSubtitle) {
+            flashcardSubtitle.textContent = isStudy 
+                ? 'Quick-recall Q&A flashcards covering key services, definitions, CLI commands, and exam gotchas.'
+                : 'Flip through official exam guide domains and verified skills checklist to evaluate your readiness.';
+        }
+
         // Reset card flip state
         flashcardCardElement.classList.remove('flipped');
         
@@ -419,13 +453,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderActiveFlashcard = () => {
         const card = currentFlashcards[currentFlashcardIndex];
         const total = currentFlashcards.length;
+        const isStudy = flashcardViewMode === 'study';
 
         // Populate front
-        flashcardFrontCategory.textContent = card.category || "Domain Objective";
+        flashcardFrontCategory.textContent = card.category || (isStudy ? "Quick Recall" : "Domain Objective");
         flashcardFrontTitle.textContent = card.front;
 
         // Populate back
-        flashcardBackCategory.textContent = (card.category || "Checklist") + " - Skills Checklist";
+        flashcardBackCategory.textContent = isStudy 
+            ? (card.category || "Answer") + " — Answer"
+            : (card.category || "Checklist") + " — Skills Checklist";
         
         // Format the back content - replace newlines with bullet points
         const lines = card.back.split('\n');
@@ -482,46 +519,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Tab switching handlers
-    tabPracticeExams.addEventListener('click', () => {
-        tabPracticeExams.classList.add('active');
-        tabCheatsheets.classList.remove('active');
-        tabFlashcards.classList.remove('active');
-        certificationsGrid.classList.remove('hidden');
-        cheatsheetsGrid.classList.add('hidden');
-        flashcardsGrid.classList.add('hidden');
-    });
+    const allTabBtns = [tabPracticeExams, tabCheatsheets, tabFlashcards, tabChecklist];
+    const allTabGrids = [certificationsGrid, cheatsheetsGrid, flashcardsGrid, checklistGrid];
 
-    tabCheatsheets.addEventListener('click', () => {
-        tabCheatsheets.classList.add('active');
-        tabPracticeExams.classList.remove('active');
-        tabFlashcards.classList.remove('active');
-        cheatsheetsGrid.classList.remove('hidden');
-        certificationsGrid.classList.add('hidden');
-        flashcardsGrid.classList.add('hidden');
-    });
+    const activateTab = (activeBtn, activeGrid) => {
+        allTabBtns.forEach(btn => btn.classList.remove('active'));
+        allTabGrids.forEach(grid => grid.classList.add('hidden'));
+        activeBtn.classList.add('active');
+        activeGrid.classList.remove('hidden');
+    };
 
-    tabFlashcards.addEventListener('click', () => {
-        tabFlashcards.classList.add('active');
-        tabPracticeExams.classList.remove('active');
-        tabCheatsheets.classList.remove('active');
-        flashcardsGrid.classList.remove('hidden');
-        certificationsGrid.classList.add('hidden');
-        cheatsheetsGrid.classList.add('hidden');
-    });
+    tabPracticeExams.addEventListener('click', () => activateTab(tabPracticeExams, certificationsGrid));
+    tabCheatsheets.addEventListener('click', () => activateTab(tabCheatsheets, cheatsheetsGrid));
+    tabFlashcards.addEventListener('click', () => activateTab(tabFlashcards, flashcardsGrid));
+    tabChecklist.addEventListener('click', () => activateTab(tabChecklist, checklistGrid));
 
     // --- Render Dashboard (Exams under selected provider) ---
     const renderDashboard = () => {
         // Reset tab state to default (Practice Exams active)
-        tabPracticeExams.classList.add('active');
-        tabCheatsheets.classList.remove('active');
-        tabFlashcards.classList.remove('active');
-        certificationsGrid.classList.remove('hidden');
-        cheatsheetsGrid.classList.add('hidden');
-        flashcardsGrid.classList.add('hidden');
+        activateTab(tabPracticeExams, certificationsGrid);
 
         certificationsGrid.innerHTML = '';
         cheatsheetsGrid.innerHTML = '';
         flashcardsGrid.innerHTML = '';
+        checklistGrid.innerHTML = '';
         headerBreadcrumbs.textContent = providers[currentProvider] ? providers[currentProvider].name : 'Dashboard';
 
         const filtered = certifications.filter(c => c.provider === currentProvider);
@@ -530,6 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
             certificationsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No certifications available under this provider yet.</p>';
             cheatsheetsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No study cheat sheets available under this provider yet.</p>';
             flashcardsGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No flashcards available under this provider yet.</p>';
+            checklistGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px 0; color: var(--text-secondary);">No exam guide checklists available under this provider yet.</p>';
             return;
         }
 
@@ -577,25 +599,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
             cheatsheetsGrid.appendChild(csCard);
 
-            // 3. Render Flashcard Card
+            // 3. Render Study Flashcard Card (Q&A quick-recall style)
             const fcCard = document.createElement('div');
             fcCard.className = 'cert-card';
             fcCard.innerHTML = `
                 <div class="cert-icon">${cert.icon || '📄'}</div>
                 <h2 class="cert-title">${cert.name} Flashcards</h2>
-                <p class="cert-desc">Interactive review of the official exam guide domains, skills checklist, and pass requirements.</p>
+                <p class="cert-desc">Quick-recall Q&A flashcards covering key services, definitions, CLI commands, and exam gotchas.</p>
                 <div class="cert-meta">
-                    <span class="cert-q-count">Exam Guide Checklist</span>
+                    <span class="cert-q-count">${cert.studyFlashcardCount || 0} Flashcards</span>
                     <button class="primary-btn view-fc-btn" data-id="${cert.id}">Study Flashcards</button>
                 </div>
             `;
             
             fcCard.querySelector('.view-fc-btn').addEventListener('click', (e) => {
                 const id = e.target.getAttribute('data-id');
-                loadFlashcardDetail(id);
+                loadStudyFlashcardDetail(id);
             });
 
             flashcardsGrid.appendChild(fcCard);
+
+            // 4. Render Exam Guide Checklist Card (domain-based official exam guide)
+            const clCard = document.createElement('div');
+            clCard.className = 'cert-card';
+            clCard.innerHTML = `
+                <div class="cert-icon">${cert.icon || '📄'}</div>
+                <h2 class="cert-title">${cert.name} Checklist</h2>
+                <p class="cert-desc">Official exam guide domains and verified skills checklist to evaluate your readiness.</p>
+                <div class="cert-meta">
+                    <span class="cert-q-count">Exam Guide Checklist</span>
+                    <button class="primary-btn view-cl-btn" data-id="${cert.id}">View Checklist</button>
+                </div>
+            `;
+            
+            clCard.querySelector('.view-cl-btn').addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                loadFlashcardDetail(id);
+            });
+
+            checklistGrid.appendChild(clCard);
         });
     };
 

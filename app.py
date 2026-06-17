@@ -30,7 +30,8 @@ def get_certifications():
             "icon": cert.get("icon", "📄"),
             "provider": cert.get("provider"),
             "links": cert.get("links", []),
-            "questionCount": len(cert.get("questions", []))
+            "questionCount": len(cert.get("questions", [])),
+            "studyFlashcardCount": len(cert.get("study_flashcards", []))
         })
     return jsonify(summary)
 

@@ -63,11 +63,12 @@
                         <h1 id="dashboard-title">Choose Your Certification</h1>
                         <p class="subtitle" id="dashboard-subtitle">Select an exam category to start practicing with detailed feedback.</p>
                         
-                        <!-- Tabs separating Practice Tests, Cheatsheets, and Flashcards -->
+                        <!-- Tabs separating Practice Tests, Cheatsheets, Flashcards, and Exam Guide Checklist -->
                         <div class="dashboard-tabs">
                             <button class="tab-btn active" id="tab-practice-exams">📝 Practice Exams</button>
                             <button class="tab-btn" id="tab-cheatsheets">📑 Study Cheat Sheets</button>
                             <button class="tab-btn" id="tab-flashcards">🎴 Study Flashcards</button>
+                            <button class="tab-btn" id="tab-checklist">📋 Exam Guide Checklist</button>
                         </div>
                     </div>
                     
@@ -84,9 +85,14 @@
                         <!-- Cheatsheet cards populated dynamically -->
                     </div>
 
-                    <!-- Dynamic grid of Flashcards -->
+                    <!-- Dynamic grid of Study Flashcards (Q&A quick-recall) -->
                     <div id="flashcards-grid" class="certs-grid hidden">
                         <!-- Flashcard selector cards populated dynamically -->
+                    </div>
+
+                    <!-- Dynamic grid of Exam Guide Checklist (domain-based) -->
+                    <div id="checklist-grid" class="certs-grid hidden">
+                        <!-- Checklist selector cards populated dynamically -->
                     </div>
                 </section>
 
@@ -287,7 +293,7 @@
                                 <span class="btn-arrow">&larr;</span> Back to Dashboard
                             </button>
                             <h1 id="flashcard-title" class="flashcard-title-header">Exam Guide Checklist</h1>
-                            <p class="subtitle">Flip through official exam guide domains and verified skills checklist to evaluate your readiness.</p>
+                            <p id="flashcard-subtitle" class="subtitle">Flip through official exam guide domains and verified skills checklist to evaluate your readiness.</p>
                         </div>
                         
                         <!-- Flashcard Card Component -->

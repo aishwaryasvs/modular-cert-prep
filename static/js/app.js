@@ -109,6 +109,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const csCommands = document.getElementById('cs-commands');
     const csPatterns = document.getElementById('cs-patterns');
 
+    // Exam Guide Checklist View
+    const checklistView = document.getElementById('checklist-view');
+    const checklistBackBtn = document.getElementById('checklist-back-btn');
+    const checklistTitle = document.getElementById('checklist-title');
+    const checklistSubtitle = document.getElementById('checklist-subtitle');
+    const checklistProgressText = document.getElementById('checklist-progress-text');
+    const checklistResetBtn = document.getElementById('checklist-reset-btn');
+    const checklistProgressBar = document.getElementById('checklist-progress-bar');
+    const checklistContent = document.getElementById('checklist-content');
+
     // Config View
     const configBackBtn = document.getElementById('config-back-btn');
     const configExamTitle = document.getElementById('config-exam-title');
@@ -199,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- View Router ---
     const switchView = (viewName) => {
-        const views = [dashboardView, quizConfigView, quizView, cheatsheetView, flashcardView, scorecardView];
+        const views = [dashboardView, quizConfigView, quizView, cheatsheetView, flashcardView, scorecardView, checklistView];
         views.forEach(view => {
             view.classList.remove('active');
         });
@@ -216,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (viewName === 'quiz') quizView.classList.add('active');
             if (viewName === 'cheatsheet') cheatsheetView.classList.add('active');
             if (viewName === 'flashcard') flashcardView.classList.add('active');
+            if (viewName === 'checklist') checklistView.classList.add('active');
             if (viewName === 'scorecard') scorecardView.classList.add('active');
         }, 150);
     };
@@ -389,22 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Interactive Flashcards ---
-    const loadFlashcardDetail = async (certId) => {
-        try {
-            const response = await fetch(`/api/certifications/${certId}`);
-            if (!response.ok) throw new Error('Failed to load certification details');
-            
-            currentCert = await response.json();
-            currentFlashcards = currentCert.flashcards || [];
-            currentFlashcardIndex = 0;
-            flashcardViewMode = 'checklist';
-            showFlashcards();
-        } catch (error) {
-            console.error('Error fetching flashcards:', error);
-            alert('Could not fetch flashcard details. Please try again.');
-        }
-    };
-
     const loadStudyFlashcardDetail = async (certId) => {
         try {
             const response = await fetch(`/api/certifications/${certId}`);
@@ -427,20 +422,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const isStudy = flashcardViewMode === 'study';
-        const viewLabel = isStudy ? 'Study Flashcards' : 'Exam Guide Checklist';
-        headerBreadcrumbs.textContent = `${providers[currentProvider].name} / ${currentCert.name} / ${viewLabel}`;
+        headerBreadcrumbs.textContent = `${providers[currentProvider].name} / ${currentCert.name} / Study Flashcards`;
         
         // Update title
         const flashcardTitleHeader = document.getElementById('flashcard-title');
         const flashcardSubtitle = document.getElementById('flashcard-subtitle');
         if (flashcardTitleHeader) {
-            flashcardTitleHeader.textContent = isStudy ? `${currentCert.name} Study Flashcards` : `${currentCert.name} Exam Guide Checklist`;
+            flashcardTitleHeader.textContent = `${currentCert.name} Study Flashcards`;
         }
         if (flashcardSubtitle) {
-            flashcardSubtitle.textContent = isStudy 
-                ? 'Quick-recall Q&A flashcards covering key services, definitions, CLI commands, and exam gotchas.'
-                : 'Flip through official exam guide domains and verified skills checklist to evaluate your readiness.';
+            flashcardSubtitle.textContent = 'Quick-recall Q&A flashcards covering key services, definitions, CLI commands, and exam gotchas.';
         }
 
         // Reset card flip state
@@ -453,16 +444,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderActiveFlashcard = () => {
         const card = currentFlashcards[currentFlashcardIndex];
         const total = currentFlashcards.length;
-        const isStudy = flashcardViewMode === 'study';
 
         // Populate front
-        flashcardFrontCategory.textContent = card.category || (isStudy ? "Quick Recall" : "Domain Objective");
+        flashcardFrontCategory.textContent = card.category || "Quick Recall";
         flashcardFrontTitle.textContent = card.front;
 
         // Populate back
-        flashcardBackCategory.textContent = isStudy 
-            ? (card.category || "Answer") + " — Answer"
-            : (card.category || "Checklist") + " — Skills Checklist";
+        flashcardBackCategory.textContent = (card.category || "Answer") + " — Answer";
         
         // Format the back content - replace newlines with bullet points
         const lines = card.back.split('\n');
@@ -482,6 +470,153 @@ document.addEventListener('DOMContentLoaded', () => {
         // Disable/enable controls
         flashcardPrevBtn.disabled = currentFlashcardIndex === 0;
         flashcardNextBtn.disabled = currentFlashcardIndex === total - 1;
+    };
+
+    // --- Exam Guide Checklist ---
+    const loadChecklistDetail = async (certId) => {
+        try {
+            const response = await fetch(`/api/certifications/${certId}`);
+            if (!response.ok) throw new Error('Failed to load certification details');
+            
+            currentCert = await response.json();
+            showChecklist();
+        } catch (error) {
+            console.error('Error fetching checklist:', error);
+            alert('Could not fetch checklist details. Please try again.');
+        }
+    };
+
+    const showChecklist = () => {
+        if (!currentCert) return;
+
+        const checklistData = currentCert.flashcards || [];
+        if (checklistData.length === 0) {
+            alert("No checklist configured for this certification.");
+            return;
+        }
+
+        headerBreadcrumbs.textContent = `${providers[currentProvider].name} / ${currentCert.name} / Exam Guide Checklist`;
+        checklistTitle.textContent = `${currentCert.name} Exam Guide Checklist`;
+        checklistSubtitle.textContent = `Evaluate your readiness by marking off key skills as you master them.`;
+
+        // Render checklist content
+        renderChecklist(checklistData);
+        switchView('checklist');
+    };
+
+    const renderChecklist = (checklistData) => {
+        checklistContent.innerHTML = '';
+
+        // Load checked items state from localStorage
+        const storageKey = `checklist_progress_${currentCert.id}`;
+        let checkedStates = JSON.parse(localStorage.getItem(storageKey)) || {};
+
+        let totalItems = 0;
+
+        checklistData.forEach((domain, domainIndex) => {
+            const domainCard = document.createElement('div');
+            domainCard.className = 'checklist-domain-card';
+
+            const domainTitle = document.createElement('h3');
+            domainTitle.className = 'checklist-domain-title';
+            domainTitle.textContent = domain.category || `Domain ${domainIndex + 1}`;
+            domainCard.appendChild(domainTitle);
+
+            const domainSubtitle = document.createElement('p');
+            domainSubtitle.className = 'checklist-domain-subtitle';
+            domainSubtitle.textContent = domain.front;
+            domainCard.appendChild(domainSubtitle);
+
+            const itemsList = document.createElement('div');
+            itemsList.className = 'checklist-items-list';
+
+            // Split the back field by newline to get checklist items
+            const lines = domain.back.split('\n');
+            lines.forEach((line, lineIndex) => {
+                const cleanedLine = line.trim().replace(/^-\s*/, '');
+                if (!cleanedLine) return;
+
+                totalItems++;
+                const itemKey = `${domainIndex}_${lineIndex}`;
+                const isChecked = checkedStates[itemKey] || false;
+
+                const itemLabel = document.createElement('label');
+                itemLabel.className = 'checklist-item';
+                if (isChecked) itemLabel.classList.add('checked');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = isChecked;
+                checkbox.dataset.itemKey = itemKey;
+
+                const checkboxCustom = document.createElement('span');
+                checkboxCustom.className = 'checklist-checkbox-custom';
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'checklist-item-text';
+                textSpan.textContent = cleanedLine;
+
+                itemLabel.appendChild(checkbox);
+                itemLabel.appendChild(checkboxCustom);
+                itemLabel.appendChild(textSpan);
+
+                // Checkbox state change listener
+                checkbox.addEventListener('change', (e) => {
+                    const checked = e.target.checked;
+                    
+                    // Toggle wrapper styling class
+                    if (checked) {
+                        itemLabel.classList.add('checked');
+                    } else {
+                        itemLabel.classList.remove('checked');
+                    }
+
+                    // Update localStorage
+                    checkedStates[itemKey] = checked;
+                    localStorage.setItem(storageKey, JSON.stringify(checkedStates));
+
+                    // Recalculate progress
+                    updateChecklistProgress(totalItems);
+                });
+
+                itemsList.appendChild(itemLabel);
+            });
+
+            domainCard.appendChild(itemsList);
+            checklistContent.appendChild(domainCard);
+        });
+
+        // Initialize progress bar
+        updateChecklistProgress(totalItems);
+
+        // Bind reset button
+        checklistResetBtn.onclick = () => {
+            if (confirm("Are you sure you want to reset all checked items for this exam checklist?")) {
+                localStorage.removeItem(storageKey);
+                // Re-render
+                renderChecklist(checklistData);
+            }
+        };
+    };
+
+    const updateChecklistProgress = (totalItems) => {
+        if (totalItems === 0) return;
+
+        const storageKey = `checklist_progress_${currentCert.id}`;
+        const checkedStates = JSON.parse(localStorage.getItem(storageKey)) || {};
+        
+        let checkedCount = 0;
+        // Count how many keys in checkedStates are true
+        Object.keys(checkedStates).forEach(key => {
+            if (checkedStates[key]) checkedCount++;
+        });
+
+        // Cap checkedCount to totalItems to prevent out-of-sync discrepancies
+        checkedCount = Math.min(checkedCount, totalItems);
+
+        const percentage = Math.round((checkedCount / totalItems) * 100);
+        checklistProgressBar.style.width = `${percentage}%`;
+        checklistProgressText.textContent = `${percentage}% Complete (${checkedCount} of ${totalItems} tasks)`;
     };
 
     // Card Flip trigger
@@ -514,6 +649,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     flashcardBackBtn.addEventListener('click', () => {
+        switchView('dashboard');
+        renderDashboard();
+    });
+
+    checklistBackBtn.addEventListener('click', () => {
         switchView('dashboard');
         renderDashboard();
     });
@@ -634,7 +774,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             clCard.querySelector('.view-cl-btn').addEventListener('click', (e) => {
                 const id = e.target.getAttribute('data-id');
-                loadFlashcardDetail(id);
+                loadChecklistDetail(id);
             });
 
             checklistGrid.appendChild(clCard);

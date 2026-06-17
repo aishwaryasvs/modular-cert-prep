@@ -366,6 +366,35 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- View 7: Interactive Exam Guide Checklist View -->
+                <section id="checklist-view" class="view-section">
+                    <div class="checklist-container">
+                        <div class="checklist-header-card">
+                            <button id="checklist-back-btn" class="text-btn flex-btn">
+                                <span class="btn-arrow">&larr;</span> Back to Dashboard
+                            </button>
+                            <h1 id="checklist-title" class="checklist-title-header">Exam Guide Checklist</h1>
+                            <p id="checklist-subtitle" class="subtitle">Evaluate your readiness by marking off key skills as you master them.</p>
+                            
+                            <!-- Progress Bar -->
+                            <div class="checklist-progress-wrapper">
+                                <div class="checklist-progress-info">
+                                    <span id="checklist-progress-text" class="checklist-progress-text">0% Complete (0 of 0 tasks)</span>
+                                    <button id="checklist-reset-btn" class="text-btn reset-btn">Reset Progress</button>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div id="checklist-progress-bar" class="progress-bar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic list of domains and checklist items -->
+                        <div id="checklist-content" class="checklist-content-sections">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </section>
             </main>
 
             <!-- Footer -->

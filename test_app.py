@@ -135,14 +135,16 @@ class TestCertPrepAuthAndDB(unittest.TestCase):
         response = self.client.get('/login/bypass', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
-        # 2. Post a new quiz attempt
+        # 2. Post a new quiz attempt with question and answer details
         attempt_data = {
             "certification_id": "google-associate-cloud-engineer",
             "score": 80.0,
             "total_questions": 10,
             "correct_questions": 8,
             "mode": "simulation",
-            "difficulty": "medium"
+            "difficulty": "medium",
+            "questions": ["gace-001", "gace-002"],
+            "answers": [1, 0]
         }
         response = self.client.post('/api/attempts', 
                                     data=json.dumps(attempt_data), 
@@ -151,8 +153,19 @@ class TestCertPrepAuthAndDB(unittest.TestCase):
         res_data = json.loads(response.data)
         self.assertTrue(res_data['success'])
         self.assertIn('attempt_id', res_data)
+        attempt_id = res_data['attempt_id']
 
-        # 3. Retrieve metrics and check if stats are computed correctly
+        # 3. Retrieve detailed attempt contents for review
+        response = self.client.get(f'/api/attempts/{attempt_id}')
+        self.assertEqual(response.status_code, 200)
+        details = json.loads(response.data)
+        self.assertEqual(details['score'], 80.0)
+        self.assertEqual(details['total_questions'], 10)
+        self.assertEqual(details['correct_questions'], 8)
+        self.assertEqual(len(details['answers']), 2)
+        self.assertEqual(details['answers'][0], 1)
+
+        # 4. Retrieve metrics and check if stats are computed correctly
         response = self.client.get('/api/metrics')
         self.assertEqual(response.status_code, 200)
         metrics = json.loads(response.data)

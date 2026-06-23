@@ -723,7 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const fetchAndRenderMetrics = () => {
-        metricsHistoryBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px;"><div class="spinner" style="margin: 0 auto;"></div></td></tr>`;
+        metricsHistoryBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px;"><div class="spinner" style="margin: 0 auto;"></div></td></tr>`;
         
         fetch('/api/metrics')
             .then(res => {
@@ -740,7 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.recent_attempts.length === 0) {
                     metricsHistoryBody.innerHTML = `
                         <tr>
-                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                            <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 20px;">
                                 No quiz attempts logged yet. Start studying to see your stats!
                             </td>
                         </tr>
@@ -759,7 +759,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${attempt.score}% (${attempt.correct_questions}/${attempt.total_questions})</td>
                         <td><span class="review-badge ${statusClass}" style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold;">${statusText}</span></td>
                         <td style="white-space: nowrap; font-size: 0.82rem; color: var(--text-secondary);">${escapeHtml(attempt.timestamp)}</td>
+                        <td>
+                            <button type="button" class="primary-btn review-attempt-btn" data-attempt-id="${attempt.id}" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; width: auto; min-width: 0; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--accent-primary); color: var(--accent-primary); transition: all 0.2s ease;">
+                                Review
+                            </button>
+                        </td>
                     `;
+                    tr.querySelector('.review-attempt-btn').addEventListener('click', (e) => {
+                        const attemptId = e.currentTarget.getAttribute('data-attempt-id');
+                        reviewPastAttempt(attemptId);
+                    });
                     metricsHistoryBody.appendChild(tr);
                 });
             })
@@ -767,11 +776,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(err);
                 metricsHistoryBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--error); padding: 20px;">
+                        <td colspan="7" style="text-align: center; color: var(--error); padding: 20px;">
                             Error loading performance metrics. Please try again.
                         </td>
                     </tr>
                 `;
+            });
+    };
+
+    const reviewPastAttempt = (attemptId) => {
+        showToastNotification('Loading quiz history...');
+        
+        fetch(`/api/attempts/${attemptId}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to fetch attempt details');
+                return res.json();
+            })
+            .then(data => {
+                activeSession = {
+                    mode: data.mode === 'simulation' ? 'exam' : 'practice',
+                    difficulty: data.difficulty,
+                    questions: data.questions,
+                    answers: data.answers,
+                    flagged: new Array(data.questions.length).fill(false),
+                    score: data.correct_questions,
+                    isReview: true
+                };
+                currentCert = {
+                    id: data.certification_id,
+                    name: data.certification_name
+                };
+
+                showScorecard();
+            })
+            .catch(err => {
+                console.error(err);
+                showToastNotification('Error loading attempt history.');
             });
     };
 
@@ -1344,19 +1384,23 @@ document.addEventListener('DOMContentLoaded', () => {
         scorePercentage.textContent = `${scorePct}%`;
         scoreFraction.textContent = `${correctCount} / ${total}`;
 
-        // Log quiz attempt to backend database
-        fetch('/api/attempts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                certification_id: currentCert.id,
-                score: scorePct,
-                total_questions: total,
-                correct_questions: correctCount,
-                mode: activeSession.mode === 'exam' ? 'simulation' : 'practice',
-                difficulty: activeSession.difficulty
-            })
-        }).catch(err => console.error('Error logging quiz attempt:', err));
+        // Log quiz attempt to backend database if NOT a review session
+        if (!activeSession.isReview) {
+            fetch('/api/attempts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    certification_id: currentCert.id,
+                    score: scorePct,
+                    total_questions: total,
+                    correct_questions: correctCount,
+                    mode: activeSession.mode === 'exam' ? 'simulation' : 'practice',
+                    difficulty: activeSession.difficulty,
+                    questions: activeSession.questions.map(q => q.id),
+                    answers: activeSession.answers
+                })
+            }).catch(err => console.error('Error logging quiz attempt:', err));
+        }
 
         const scoreRingBar = document.getElementById('score-ring-bar');
         if (scoreRingBar) {

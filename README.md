@@ -30,7 +30,7 @@ Now backed by a relational database schema using **Flask-SQLAlchemy** and secure
   - Average percentage score.
   - Simulation exam pass rate (scores >= 70%).
   - Total questions resolved.
-- **Quiz Attempts Logging**: Automatically logs all quiz attempt details (score, correct/total count, mode, difficulty, and timestamp) in the relational database (`quiz_attempts` table), with a detailed table showing the top 10 recent attempts.
+- **Quiz Attempts Logging & Review**: Automatically logs all quiz attempt details (score, correct/total count, mode, difficulty, and timestamp) in the relational database (`quiz_attempts` table), with a detailed table showing the top 10 recent attempts. Users can click **Review** on any past attempt in their Performance Dashboard to reload and inspect the exact questions and their chosen answers on the scorecard as many times as they want.
 - **User Profile Options & Settings**: A bottom-up flyout menu accessible by clicking the user footer in the sidebar, providing:
   - **My Profile**: View user registration details, username, and total certifications started.
   - **Change Password**: Secure, modal-driven password update form validating current credentials.

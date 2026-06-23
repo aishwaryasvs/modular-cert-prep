@@ -123,6 +123,8 @@ class QuizAttempt(db.Model):
     mode = db.Column(db.String(50), nullable=False)
     difficulty = db.Column(db.String(50), nullable=True)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+    questions_json = db.Column(db.Text, nullable=True)
+    answers_json = db.Column(db.Text, nullable=True)
 
     user = db.relationship('User', backref=db.backref('attempts', lazy=True))
     certification = db.relationship('Certification', backref=db.backref('attempts', lazy=True))
@@ -420,6 +422,8 @@ def save_attempt():
     correct_questions = data.get('correct_questions')
     mode = data.get('mode')
     difficulty = data.get('difficulty', 'all')
+    questions_list = data.get('questions')
+    answers_list = data.get('answers')
     
     if not cert_id or score is None or total_questions is None or correct_questions is None or not mode:
         return jsonify({"error": "Missing required fields"}), 400
@@ -435,12 +439,54 @@ def save_attempt():
         total_questions=int(total_questions),
         correct_questions=int(correct_questions),
         mode=mode,
-        difficulty=difficulty
+        difficulty=difficulty,
+        questions_json=json.dumps(questions_list) if questions_list else None,
+        answers_json=json.dumps(answers_list) if answers_list else None
     )
     db.session.add(attempt)
     db.session.commit()
     
     return jsonify({"success": True, "attempt_id": attempt.id}), 201
+
+
+@app.route('/api/attempts/<int:attempt_id>', methods=['GET'])
+@login_required
+def get_attempt_details(attempt_id):
+    attempt = QuizAttempt.query.filter_by(id=attempt_id, user_id=current_user.id).first()
+    if not attempt:
+        abort(404, description="Attempt not found")
+        
+    q_ids = json.loads(attempt.questions_json) if attempt.questions_json else []
+    answers = json.loads(attempt.answers_json) if attempt.answers_json else []
+    
+    questions = Question.query.filter(Question.id.in_(q_ids)).all()
+    q_map = {q.id: q for q in questions}
+    ordered_questions = []
+    for q_id in q_ids:
+        if q_id in q_map:
+            q = q_map[q_id]
+            ordered_questions.append({
+                "id": q.id,
+                "question": q.question,
+                "options": json.loads(q.options_json),
+                "correctAnswerIndex": q.correct_answer_index,
+                "difficulty": q.difficulty,
+                "explanation": q.explanation
+            })
+            
+    return jsonify({
+        "id": attempt.id,
+        "certification_name": attempt.certification.name,
+        "certification_id": attempt.certification_id,
+        "score": attempt.score,
+        "correct_questions": attempt.correct_questions,
+        "total_questions": attempt.total_questions,
+        "mode": attempt.mode,
+        "difficulty": attempt.difficulty,
+        "timestamp": attempt.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        "questions": ordered_questions,
+        "answers": answers
+    })
 
 
 @app.route('/api/metrics', methods=['GET'])
@@ -575,6 +621,14 @@ def run_migrations():
                 conn.execute(db.text("ALTER TABLE users ADD COLUMN created_at DATETIME"))
                 conn.commit()
                 print("Added created_at column to users table successfully!")
+        
+        columns_attempts = [c['name'] for c in inspector.get_columns('quiz_attempts')]
+        if 'questions_json' not in columns_attempts:
+            with db.engine.connect() as conn:
+                conn.execute(db.text("ALTER TABLE quiz_attempts ADD COLUMN questions_json TEXT"))
+                conn.execute(db.text("ALTER TABLE quiz_attempts ADD COLUMN answers_json TEXT"))
+                conn.commit()
+                print("Added questions_json and answers_json columns to quiz_attempts table successfully!")
     except Exception as e:
         print(f"Migration check warning: {e}")
 

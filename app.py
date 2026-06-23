@@ -24,6 +24,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     def set_password(self, password):
         from werkzeug.security import generate_password_hash
@@ -506,6 +507,51 @@ def get_metrics():
     return jsonify(metrics)
 
 
+@app.route('/api/profile', methods=['GET'])
+@login_required
+def get_profile():
+    started_certs = db.session.query(QuizAttempt.certification_id).filter_by(user_id=current_user.id).distinct().count()
+    member_since = current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else "Unknown"
+    return jsonify({
+        "username": current_user.username,
+        "member_since": member_since,
+        "certifications_started": started_certs
+    })
+
+
+@app.route('/api/change-password', methods=['POST'])
+@login_required
+def change_password():
+    data = request.get_json()
+    if not data or 'current_password' not in data or 'new_password' not in data:
+        return jsonify({"error": "Current and new password are required"}), 400
+    
+    current_pw = data['current_password']
+    new_pw = data['new_password']
+    
+    if len(new_pw) < 6:
+        return jsonify({"error": "New password must be at least 6 characters long"}), 400
+        
+    if not current_user.check_password(current_pw):
+        return jsonify({"error": "Incorrect current password"}), 400
+        
+    current_user.set_password(new_pw)
+    db.session.commit()
+    return jsonify({"success": True, "message": "Password updated successfully!"})
+
+
+@app.route('/api/attempts/reset', methods=['POST'])
+@login_required
+def reset_attempts():
+    try:
+        QuizAttempt.query.filter_by(user_id=current_user.id).delete()
+        db.session.commit()
+        return jsonify({"success": True, "message": "All study progress reset successfully!"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
 def seed_admin_user():
     creds = get_or_create_test_credentials()
     username = creds['username']
@@ -518,9 +564,25 @@ def seed_admin_user():
         db.session.commit()
         print(f"Admin user {username} seeded successfully!")
 
+
+def run_migrations():
+    try:
+        from sqlalchemy import inspect
+        inspector = inspect(db.engine)
+        columns = [c['name'] for c in inspector.get_columns('users')]
+        if 'created_at' not in columns:
+            with db.engine.connect() as conn:
+                conn.execute(db.text("ALTER TABLE users ADD COLUMN created_at DATETIME"))
+                conn.commit()
+                print("Added created_at column to users table successfully!")
+    except Exception as e:
+        print(f"Migration check warning: {e}")
+
+
 # --- Database initialization and Startup ---
 with app.app_context():
     db.create_all()
+    run_migrations()
     seed_database_from_json()
     seed_admin_user()
 

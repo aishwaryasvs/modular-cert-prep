@@ -35,7 +35,27 @@
             </nav>
             
             <div class="sidebar-footer">
-                <span class="user-display" title="Logged in as {{ current_user.username }}">👤 {{ current_user.username }}</span>
+                <div class="user-display-wrapper">
+                    <span class="user-display" id="user-display-btn" title="Logged in as {{ current_user.username }}">👤 {{ current_user.username }}</span>
+                    
+                    <!-- Upward Dropdown Popover Menu -->
+                    <div id="profile-popover" class="profile-popover hidden">
+                        <div class="popover-header">
+                            <span class="popover-avatar">👤</span>
+                            <div class="popover-user-info">
+                                <span class="popover-username">{{ current_user.username }}</span>
+                                <span class="popover-role">Cloud Candidate</span>
+                            </div>
+                        </div>
+                        <div class="popover-divider"></div>
+                        <button type="button" class="popover-item" id="popover-view-profile">👤 View Profile</button>
+                        <button type="button" class="popover-item" id="popover-change-password">🔑 Change Password</button>
+                        <button type="button" class="popover-item" id="popover-dashboard">📊 Performance Stats</button>
+                        <button type="button" class="popover-item" id="popover-settings">⚙️ Settings</button>
+                        <div class="popover-divider"></div>
+                        <a href="{{ url_for('logout') }}" class="popover-item logout-item">🚪 Sign Out</a>
+                    </div>
+                </div>
             </div>
         </aside>
 
@@ -509,6 +529,75 @@
             <div class="modal-actions">
                 <button type="button" id="confirm-modal-cancel" class="primary-btn secondary-style">Resume Study</button>
                 <button type="button" id="confirm-modal-ok" class="primary-btn error-action-style">Finish & Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2 class="modal-title">My Profile</h2>
+            <div class="profile-info-details">
+                <div class="profile-detail-row">
+                    <span class="detail-label">Username:</span>
+                    <span class="detail-value" id="profile-modal-username">-</span>
+                </div>
+                <div class="profile-detail-row">
+                    <span class="detail-label">Member Since:</span>
+                    <span class="detail-value" id="profile-modal-date">-</span>
+                </div>
+                <div class="profile-detail-row">
+                    <span class="detail-label">Certifications Started:</span>
+                    <span class="detail-value" id="profile-modal-certs">-</span>
+                </div>
+            </div>
+            <div class="modal-actions" style="margin-top: 24px;">
+                <button type="button" id="profile-modal-close" class="primary-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="password-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2 class="modal-title">Change Password</h2>
+            <form id="change-password-form" class="modal-form">
+                <div class="form-group">
+                    <label for="current-password" class="form-label">Current Password</label>
+                    <input type="password" id="current-password" class="form-input" required placeholder="Enter current password">
+                </div>
+                <div class="form-group">
+                    <label for="new-password" class="form-label">New Password</label>
+                    <input type="password" id="new-password" class="form-input" required placeholder="Enter new password (min 6 chars)">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password" class="form-label">Confirm New Password</label>
+                    <input type="password" id="confirm-password" class="form-input" required placeholder="Confirm new password">
+                </div>
+                <div id="password-error-msg" class="form-error-msg hidden"></div>
+                <div class="modal-actions" style="margin-top: 24px;">
+                    <button type="button" id="password-modal-cancel" class="primary-btn secondary-style">Cancel</button>
+                    <button type="submit" class="primary-btn">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2 class="modal-title">Workspace Settings</h2>
+            <div class="settings-options-list">
+                <div class="settings-option-item">
+                    <div class="option-description">
+                        <span class="option-name">Reset Study Progress</span>
+                        <span class="option-desc">This deletes all logged attempts and scores in your performance dashboard. This action is permanent.</span>
+                    </div>
+                    <button type="button" id="btn-reset-progress" class="primary-btn error-action-style" style="padding: 8px 16px; font-size: 0.82rem;">Reset History</button>
+                </div>
+            </div>
+            <div class="modal-actions" style="margin-top: 24px;">
+                <button type="button" id="settings-modal-close" class="primary-btn">Close</button>
             </div>
         </div>
     </div>

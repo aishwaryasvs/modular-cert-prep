@@ -1650,6 +1650,191 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     };
 
+    // --- User Profile & Popover Options ---
+    const userDisplayBtn = document.getElementById('user-display-btn');
+    const profilePopover = document.getElementById('profile-popover');
+    
+    // Popover Buttons
+    const popoverViewProfile = document.getElementById('popover-view-profile');
+    const popoverChangePassword = document.getElementById('popover-change-password');
+    const popoverDashboard = document.getElementById('popover-dashboard');
+    const popoverSettings = document.getElementById('popover-settings');
+
+    // Modals
+    const profileModal = document.getElementById('profile-modal');
+    const passwordModal = document.getElementById('password-modal');
+    const settingsModal = document.getElementById('settings-modal');
+
+    // Profile Fields & Close
+    const profileModalUsername = document.getElementById('profile-modal-username');
+    const profileModalDate = document.getElementById('profile-modal-date');
+    const profileModalCerts = document.getElementById('profile-modal-certs');
+    const profileModalClose = document.getElementById('profile-modal-close');
+
+    // Password Form & Cancel
+    const changePasswordForm = document.getElementById('change-password-form');
+    const currentPasswordInput = document.getElementById('current-password');
+    const newPasswordInput = document.getElementById('new-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const passwordErrorMsg = document.getElementById('password-error-msg');
+    const passwordModalCancel = document.getElementById('password-modal-cancel');
+
+    // Settings elements
+    const btnResetProgress = document.getElementById('btn-reset-progress');
+    const settingsModalClose = document.getElementById('settings-modal-close');
+
+    // Toggle Popover
+    if (userDisplayBtn && profilePopover) {
+        userDisplayBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profilePopover.classList.toggle('hidden');
+        });
+        
+        // Hide popover when clicking anywhere else
+        document.addEventListener('click', (e) => {
+            if (!profilePopover.contains(e.target) && e.target !== userDisplayBtn) {
+                profilePopover.classList.add('hidden');
+            }
+        });
+    }
+
+    // 1. View Profile
+    if (popoverViewProfile) {
+        popoverViewProfile.addEventListener('click', () => {
+            profilePopover.classList.add('hidden');
+            fetch('/api/profile')
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to load profile');
+                    return res.json();
+                })
+                .then(data => {
+                    profileModalUsername.textContent = data.username;
+                    profileModalDate.textContent = data.member_since;
+                    profileModalCerts.textContent = data.certifications_started;
+                    profileModal.classList.remove('hidden');
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToastNotification('Could not load profile details.');
+                });
+        });
+    }
+
+    if (profileModalClose) {
+        profileModalClose.addEventListener('click', () => {
+            profileModal.classList.add('hidden');
+        });
+    }
+
+    // 2. Change Password
+    if (popoverChangePassword) {
+        popoverChangePassword.addEventListener('click', () => {
+            profilePopover.classList.add('hidden');
+            passwordErrorMsg.classList.add('hidden');
+            changePasswordForm.reset();
+            passwordModal.classList.remove('hidden');
+        });
+    }
+
+    if (passwordModalCancel) {
+        passwordModalCancel.addEventListener('click', () => {
+            passwordModal.classList.add('hidden');
+        });
+    }
+
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            passwordErrorMsg.classList.add('hidden');
+
+            const curPw = currentPasswordInput.value;
+            const newPw = newPasswordInput.value;
+            const confPw = confirmPasswordInput.value;
+
+            if (newPw.length < 6) {
+                passwordErrorMsg.textContent = 'New password must be at least 6 characters.';
+                passwordErrorMsg.classList.remove('hidden');
+                return;
+            }
+
+            if (newPw !== confPw) {
+                passwordErrorMsg.textContent = 'Passwords do not match.';
+                passwordErrorMsg.classList.remove('hidden');
+                return;
+            }
+
+            fetch('/api/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_password: curPw, new_password: newPw })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    passwordErrorMsg.textContent = data.error;
+                    passwordErrorMsg.classList.remove('hidden');
+                } else {
+                    passwordModal.classList.add('hidden');
+                    showToastNotification('Password changed successfully!');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                passwordErrorMsg.textContent = 'An error occurred. Please try again.';
+                passwordErrorMsg.classList.remove('hidden');
+            });
+        });
+    }
+
+    // 3. Performance Stats
+    if (popoverDashboard) {
+        popoverDashboard.addEventListener('click', () => {
+            profilePopover.classList.add('hidden');
+            tabMetrics.click(); // Trigger metrics tab load
+        });
+    }
+
+    // 4. Settings
+    if (popoverSettings) {
+        popoverSettings.addEventListener('click', () => {
+            profilePopover.classList.add('hidden');
+            settingsModal.classList.remove('hidden');
+        });
+    }
+
+    if (settingsModalClose) {
+        settingsModalClose.addEventListener('click', () => {
+            settingsModal.classList.add('hidden');
+        });
+    }
+
+    // Reset Progress Action
+    if (btnResetProgress) {
+        btnResetProgress.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all progress? This deletes all your quiz attempts and dashboard scores permanently!')) {
+                fetch('/api/attempts/reset', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToastNotification('All study progress has been reset.');
+                            settingsModal.classList.add('hidden');
+                            
+                            // Reset frontend dashboard stats if they are currently loaded
+                            if (tabMetrics.classList.contains('active')) {
+                                fetchAndRenderMetrics();
+                            }
+                        } else {
+                            showToastNotification('Could not reset study progress.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showToastNotification('Error resetting study progress.');
+                    });
+            }
+        });
+    }
+
     // --- Init App ---
     initTheme();
     fetchCertifications();

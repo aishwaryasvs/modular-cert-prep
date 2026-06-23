@@ -172,5 +172,53 @@ class TestCertPrepAuthAndDB(unittest.TestCase):
         self.assertEqual(attempt['score'], 80.0)
         self.assertEqual(attempt['passed'], True)
 
+    def test_profile_and_password_features(self):
+        # 1. Bypass login to sign in
+        response = self.client.get('/login/bypass', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+        # 2. Get profile details
+        response = self.client.get('/api/profile')
+        self.assertEqual(response.status_code, 200)
+        profile = json.loads(response.data)
+        self.assertIn('username', profile)
+        self.assertIn('member_since', profile)
+        self.assertIn('certifications_started', profile)
+
+        # 3. Change password (verify incorrect current password yields error)
+        change_data = {
+            "current_password": "wrong_password",
+            "new_password": "new_secure_password"
+        }
+        response = self.client.post('/api/change-password',
+                                    data=json.dumps(change_data),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        res_data = json.loads(response.data)
+        self.assertIn('error', res_data)
+
+        # 4. Change password with correct credentials
+        with app.app_context():
+            from app import get_or_create_test_credentials
+            creds = get_or_create_test_credentials()
+            admin_pw = creds['password']
+
+        change_data = {
+            "current_password": admin_pw,
+            "new_password": "new_secure_password"
+        }
+        response = self.client.post('/api/change-password',
+                                    data=json.dumps(change_data),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.data)
+        self.assertTrue(res_data['success'])
+
+        # 5. Reset progress
+        response = self.client.post('/api/attempts/reset')
+        self.assertEqual(response.status_code, 200)
+        res_data = json.loads(response.data)
+        self.assertTrue(res_data['success'])
+
 if __name__ == '__main__':
     unittest.main()
